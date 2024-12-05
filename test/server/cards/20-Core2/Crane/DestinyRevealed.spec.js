@@ -68,43 +68,6 @@ describe('Destiny Revealed', function () {
                 expect(this.getChatLogs(5)).toContain('player1 places a fate on Doji Challenger');
             });
 
-            it('if you win by 4 or more against a unique should put fate on two things', function () {
-                this.noMoreActions();
-                this.initiateConflict({
-                    attackers: [this.yoshi],
-                    defenders: [this.toshimoko]
-                });
-
-                this.player2.clickCard(this.pd);
-                this.player2.clickCard(this.toshimoko);
-                this.player2.clickCard(this.yoshi);
-
-                this.player1.clickPrompt('5');
-                this.player2.clickPrompt('1');
-
-                let fate = this.yoshi.fate;
-                this.player1.clickCard(this.destiny);
-                expect(this.yoshi.fate).toBe(fate + 1);
-
-                expect(this.getChatLogs(10)).toContain(
-                    'player1 plays Destiny Revealed to place a fate on their duelist'
-                );
-                expect(this.getChatLogs(10)).toContain('player1 places a fate on Kakita Yoshi');
-
-                expect(this.player1).toHavePrompt('Choose another character');
-                expect(this.player1).toBeAbleToSelect(this.challenger);
-                expect(this.player1).not.toBeAbleToSelect(this.yoshi);
-                expect(this.player1).not.toBeAbleToSelect(this.toshimoko);
-                expect(this.player1).toBeAbleToSelect(this.uji);
-
-                let fate2 = this.uji.fate;
-                this.player1.clickCard(this.uji);
-                expect(this.uji.fate).toBe(fate2 + 1);
-
-                expect(this.player1).toHavePrompt('Policy Debate');
-                expect(this.getChatLogs(10)).toContain('player1 places a fate on Daidoji Uji');
-            });
-
             it('should not react on a tie', function () {
                 this.noMoreActions();
                 this.initiateConflict({

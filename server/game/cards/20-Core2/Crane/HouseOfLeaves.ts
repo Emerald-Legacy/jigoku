@@ -12,6 +12,7 @@ export default class HouseOfLeaves extends StrongholdCard {
             cost: AbilityDsl.costs.bowSelf(),
             target: {
                 cardType: CardTypes.Character,
+                cardCondition: (card) => !card.isParticipating(),
                 controller: Players.Self,
                 gameAction: AbilityDsl.actions.cardLastingEffect({
                     duration: Durations.UntilEndOfPhase,

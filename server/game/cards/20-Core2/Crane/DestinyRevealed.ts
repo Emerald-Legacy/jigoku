@@ -10,43 +10,28 @@ export default class DestinyRevealed extends DrawCard {
         this.duelStrike({
             title: 'Place a fate on a character',
             duelCondition: (duel, context) => duel.winnerController === context.player,
-            gameAction: AbilityDsl.actions.sequentialContext((context) => {
+            gameAction: AbilityDsl.actions.sequentialContext(() => {
                 let firstTarget = undefined;
-                const duel: Duel = (context as any).event.duel;
-                const twoFate = duel.loser?.some((card) => card.isUnique()) && duel.finalDifference >= 4;
-
-                let placeFateOnDuelist = AbilityDsl.actions.selectCard((context) => ({
-                    activePromptTitle: 'Choose a duel participant',
-                    hidePromptIfSingleCard: true,
-                    cardType: CardTypes.Character,
-                    controller: Players.Self,
-                    cardCondition: (card) => duel.isInvolved(card),
-                    message: '{0} places a fate on {1}',
-                    messageArgs: (cards) => [context.player, cards],
-                    subActionProperties: (card) => {
-                        context.target = card;
-                        firstTarget = card;
-                    },
-                    gameAction: AbilityDsl.actions.placeFate(() => ({
-                        target: firstTarget
-                    }))
-                }));
-
-                let placeFateOnOther = AbilityDsl.actions.selectCard((context) => ({
-                    activePromptTitle: 'Choose another character',
-                    cardType: CardTypes.Character,
-                    controller: Players.Self,
-                    cardCondition: (card) => card !== firstTarget,
-                    message: '{0} places a fate on {1}',
-                    messageArgs: (cards) => [context.player, cards],
-                    gameAction: AbilityDsl.actions.placeFate()
-                }));
-
-                let gameActions = [placeFateOnDuelist];
-                if (twoFate) {
-                    gameActions.push(placeFateOnOther);
-                }
-                return { gameActions };
+                return {
+                    gameActions: [
+                        AbilityDsl.actions.selectCard((context) => ({
+                            activePromptTitle: 'Choose a duel participant',
+                            hidePromptIfSingleCard: true,
+                            cardType: CardTypes.Character,
+                            controller: Players.Self,
+                            cardCondition: (card) => ((context as any).event.duel as Duel).isInvolved(card),
+                            message: '{0} places a fate on {1}',
+                            messageArgs: (cards) => [context.player, cards],
+                            subActionProperties: (card) => {
+                                context.target = card;
+                                firstTarget = card;
+                            },
+                            gameAction: AbilityDsl.actions.placeFate(() => ({
+                                target: firstTarget
+                            }))
+                        }))
+                    ]
+                };
             }),
             effect: 'place a fate on their duelist'
         });

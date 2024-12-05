@@ -12,9 +12,6 @@ export default class MatsuNobuiko extends DrawCard {
                 onInitiateAbilityEffects: (event, context) =>
                     context.player.opponent &&
                     event.context.ability.abilityType === 'action' &&
-                    event.cardTargets.some(
-                        (card: unknown) => card instanceof DrawCard && card.isParticipatingFor(context.player)
-                    ) &&
                     (context.source as DrawCard).isParticipating()
             },
             initiateDuel: (context) => ({

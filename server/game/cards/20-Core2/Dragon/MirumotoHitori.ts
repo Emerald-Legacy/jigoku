@@ -12,6 +12,7 @@ export default class MirumotoHitori extends DrawCard {
                 onCardLeavesPlay: (event, context) =>
                     event.card === context.source && context.game.currentPhase === Phases.Fate
             },
+            cost: AbilityDsl.costs.returnRings(1),
             gameAction: AbilityDsl.actions.cancel((context) => ({
                 target: context.source,
                 replacementGameAction: AbilityDsl.actions.sequential([

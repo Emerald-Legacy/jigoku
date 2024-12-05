@@ -11,7 +11,7 @@ function resolveActionOnSelection(context: AbilityContext, player: Player, actio
     AbilityDsl.actions
         .selectCard({
             player: playerEnum,
-            controller: playerEnum,
+            controller: Players.Any,
             cardType: CardTypes.Character,
             gameAction: action === 'honor' ? AbilityDsl.actions.honor() : AbilityDsl.actions.dishonor(),
             message: `{0} ${action}s {1}`,
@@ -43,12 +43,11 @@ export default class GloryOfTheFiveRivers extends DrawCard {
 
                     context.game.queueStep(
                         new SimpleStep(context.game, () => {
-                            for (const winner of bidResult.highest.players) {
-                                resolveActionOnSelection(context, winner, 'honor');
-                            }
-
-                            for (const loser of bidResult.lowest.players) {
-                                resolveActionOnSelection(context, loser, 'dishonor');
+                            if (bidResult.highest.players.size === 1) {
+                                for (const winner of bidResult.highest.players) {
+                                    resolveActionOnSelection(context, winner, 'dishonor');
+                                    resolveActionOnSelection(context, winner, 'honor');
+                                }
                             }
                         })
                     );

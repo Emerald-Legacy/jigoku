@@ -10,7 +10,7 @@ describe('Show Me Your Stance', function () {
                 },
                 player2: {
                     inPlay: ['kakita-toshimoko', 'shiba-tsukune', 'shosuro-sadako'],
-                    hand: ['embrace-the-void', 'policy-debate', 'lucky-coin']
+                    hand: ['embrace-the-void', 'policy-debate']
                 },
                 gameMode: 'emerald'
             });
@@ -24,7 +24,6 @@ describe('Show Me Your Stance', function () {
             this.toshimoko = this.player2.findCardByName('kakita-toshimoko');
             this.tsukune = this.player2.findCardByName('shiba-tsukune');
             this.sadako = this.player2.findCardByName('shosuro-sadako');
-            this.coin = this.player2.findCardByName('lucky-coin');
             this.pd = this.player2.findCardByName('policy-debate');
         });
 
@@ -47,7 +46,9 @@ describe('Show Me Your Stance', function () {
                 expect(this.player1).toBeAbleToSelect(this.stance);
                 this.player1.clickCard(this.stance);
 
-                expect(this.getChatLogs(5)).toContain('player1 plays Show Me Your Stance to have status tokens count when resolving this duel');
+                expect(this.getChatLogs(5)).toContain(
+                    'player1 plays Show Me Your Stance to have status tokens count when resolving this duel'
+                );
 
                 this.player1.clickPrompt('1');
                 this.player2.clickPrompt('1');
@@ -124,7 +125,6 @@ describe('Show Me Your Stance', function () {
                 this.tsukune.dishonor();
 
                 this.player1.playAttachment(this.assistant, this.challenger);
-                this.player2.playAttachment(this.coin, this.tsukune);
 
                 this.noMoreActions();
                 this.initiateConflict({
@@ -140,7 +140,7 @@ describe('Show Me Your Stance', function () {
                 this.player1.clickPrompt('1');
                 this.player2.clickPrompt('1');
 
-                expect(this.getChatLogs(5)).toContain('Shiba Tsukune: 5 vs 8: Doji Challenger');
+                expect(this.getChatLogs(5)).toContain('Shiba Tsukune: 1 vs 8: Doji Challenger');
             });
         });
 
@@ -161,9 +161,7 @@ describe('Show Me Your Stance', function () {
                 this.player1.clickCard(this.challenger);
 
                 expect(this.challenger.isParticipating()).toBe(false);
-                expect(this.getChatLogs(5)).toContain(
-                    'player1 plays Show Me Your Stance to send Doji Challenger home'
-                );
+                expect(this.getChatLogs(5)).toContain('player1 plays Show Me Your Stance to send Doji Challenger home');
             });
 
             it('should let you pick an attacking character with glory equal to or less than a participating duelist you control and send them home', function () {

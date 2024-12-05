@@ -52,7 +52,7 @@ describe('Iaijutsu Sensei', function () {
 
             this.player2.pass();
             this.player1.clickCard(this.sensei);
-            this.player1.clickCard(this.toshimoko);
+            this.player2.clickCard(this.toshimoko);
 
             expect(this.player1).toHavePrompt('Honor Bid');
             this.player1.clickPrompt('5');
@@ -73,7 +73,7 @@ describe('Iaijutsu Sensei', function () {
 
             this.player2.pass();
             this.player1.clickCard(this.sensei);
-            this.player1.clickCard(this.toshimoko);
+            this.player2.clickCard(this.toshimoko);
 
             expect(this.player1).toHavePrompt('Honor Bid');
             this.player1.clickPrompt('1');

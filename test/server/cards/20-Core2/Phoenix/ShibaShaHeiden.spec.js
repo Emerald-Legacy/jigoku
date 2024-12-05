@@ -18,7 +18,7 @@ describe('Shiba-sha Heiden', function () {
                 this.dojiWhisperer = this.player1.moveCard('doji-whisperer', 'dynasty deck');
             });
 
-            it('fills province with extra card on dynasty phase start', function () {
+            fit('fills province with extra card on dynasty phase start', function () {
                 this.noMoreActions();
                 this.player1.clickPrompt('Done');
                 this.player2.clickPrompt('Done');

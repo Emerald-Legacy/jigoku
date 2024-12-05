@@ -15,12 +15,14 @@ export default class IaijutsuSensei extends DrawCard {
             title: 'Military duel to stop contribution',
             initiateDuel: {
                 type: DuelTypes.Military,
+                opponentChoosesDuelTarget: true,
+                challengerCondition: (card, context) => !card.bowed && context.game.isDuringConflict(),
                 message: 'prevent {0} from contributing to resolution of this conflict',
                 messageArgs: (duel) => duel.loser,
                 gameAction: (duel) =>
                     AbilityDsl.actions.cardLastingEffect({
                         target: duel.loser,
-                        effect: [AbilityDsl.effects.changeContributionFunction((card) => 0)],
+                        effect: [AbilityDsl.effects.changeContributionFunction(() => 0)],
                         duration: Durations.UntilEndOfConflict
                     })
             }
