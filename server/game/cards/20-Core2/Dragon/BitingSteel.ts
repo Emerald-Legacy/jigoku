@@ -4,17 +4,17 @@ import DrawCard from '../../../drawcard';
 import type { TriggeredAbilityContext } from '../../../TriggeredAbilityContext';
 import type BaseCard from '../../../basecard';
 import type Player from '../../../player';
-import type { AbilityContext } from '../../../AbilityContext';
 
-function getAttachmentSkill(card: DrawCard, context: AbilityContext) {
+function getAttachmentSkill(card: DrawCard) {
     let amount = 0;
-    if (context.game.currentDuel.duelType === DuelTypes.Military) {
-        amount = parseInt(card.cardData.military_bonus);
-    } else if (context.game.currentDuel.duelType === DuelTypes.Political) {
-        amount = parseInt(card.cardData.political_bonus);
-    }
 
-    return isNaN(amount) ? 0 : amount;
+    const mil = parseInt(card.cardData.military_bonus);
+    if (!isNaN(mil)) amount += mil;
+
+    const pol = parseInt(card.cardData.political_bonus);
+    if (!isNaN(pol)) amount += pol;
+
+    return amount;
 }
 
 export default class BitingSteel extends DrawCard {
@@ -29,18 +29,18 @@ export default class BitingSteel extends DrawCard {
             target: {
                 cardType: CardTypes.Attachment,
                 cardCondition: (card: DrawCard, context) =>
-                    card.parent && card.parent === context.source.parent && getAttachmentSkill(card, context) !== 0,
+                    card.parent && card.parent === context.source.parent && getAttachmentSkill(card) !== 0,
                 gameAction: AbilityDsl.actions.cardLastingEffect((context) => ({
                     target: context.target.parent,
                     effect: AbilityDsl.effects.modifyDuelistSkill(
-                        getAttachmentSkill(context.target, context),
+                        getAttachmentSkill(context.target),
                         (context as any).event.duel
                     ),
                     duration: Durations.UntilEndOfDuel
                 }))
             },
             effect: 'add the skill bonus of {0} ({1}) to their duel total',
-            effectArgs: (context) => [getAttachmentSkill(context.target, context)]
+            effectArgs: (context) => [getAttachmentSkill(context.target)]
         });
 
         this.action({

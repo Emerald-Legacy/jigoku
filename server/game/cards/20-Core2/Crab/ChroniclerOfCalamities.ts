@@ -1,4 +1,4 @@
-import { CardTypes, Players, TargetModes } from '../../../Constants';
+import { CardTypes, Players } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';
 import { GameAction } from '../../../GameActions/GameAction';
@@ -58,7 +58,8 @@ export default class ChroniclerOfCalamities extends DrawCard {
                         }
                     }
                 }))
-            }
+            },
+            max: AbilityDsl.limit.perConflict(1)
         });
     }
 }
