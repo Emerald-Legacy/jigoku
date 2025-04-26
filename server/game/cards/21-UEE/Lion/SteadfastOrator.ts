@@ -9,32 +9,34 @@ export default class SteadfastOrator extends DrawCard {
 
     setupCardAbilities() {
         const limit = AbilityDsl.limit.perRound(1);
-        this.#abilityWithCost(
+        abilityWithCost(
+            this,
             limit,
             AbilityDsl.costs.discardCard(),
             'Discard a card to move the character back to the conflict'
         );
-        this.#abilityWithCost(
+        abilityWithCost(
+            this,
             limit,
             AbilityDsl.costs.discardImperialFavor(),
             'Discard the imperial favor to move the character back to the conflict'
         );
     }
+}
 
-    #abilityWithCost(limit: AbilityLimit, cost: Cost, title: string) {
-        this.reaction({
-            title,
-            when: {
-                onSendHome: (event, context) =>
-                    event.card.type === CardTypes.Character &&
-                    event.card.controller === context.player &&
-                    context.player.opponent &&
-                    event.context.player === context.player.opponent
-            },
-            cost,
-            cannotBeMirrored: true,
-            gameAction: AbilityDsl.actions.moveToConflict((context) => ({ target: (context as any).event.card })),
-            limit: limit
-        });
-    }
+function abilityWithCost(self: SteadfastOrator, limit: AbilityLimit, cost: Cost, title: string) {
+    self.reaction({
+        title,
+        when: {
+            onSendHome: (event, context) =>
+                event.card.type === CardTypes.Character &&
+                event.card.controller === context.player &&
+                context.player.opponent &&
+                event.context.player === context.player.opponent
+        },
+        cost,
+        cannotBeMirrored: true,
+        gameAction: AbilityDsl.actions.moveToConflict((context) => ({ target: (context as any).event.card })),
+        limit: limit
+    });
 }
