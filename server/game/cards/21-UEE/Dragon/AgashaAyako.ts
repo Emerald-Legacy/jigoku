@@ -1,8 +1,7 @@
 import AbilityDsl from '../../../abilitydsl';
-import { CardTypes, Decks, PlayTypes } from '../../../Constants';
+import { CardTypes, Decks, Durations, PlayTypes } from '../../../Constants';
 import DrawCard from '../../../drawcard';
 import { PlayCharacterAsIfFromHandAtHome } from '../../../PlayCharacterAsIfFromHand';
-import { PlayDisguisedCharacterAsIfFromHandAtHome } from '../../../PlayDisguisedCharacterAsIfFromHand';
 
 export default class AgashaAyako extends DrawCard {
     static id = 'agasha-ayako';
@@ -18,22 +17,27 @@ export default class AgashaAyako extends DrawCard {
                 activePromptTitle: 'Choose a character to play',
                 deck: Decks.DynastyDeck,
                 cardCondition: (card) => card.type === CardTypes.Character && card.printedCost <= 2 && !card.isUnique(),
-                gameAction: AbilityDsl.actions.playCard((context) => {
-                    const target = context.targets[0];
-                    return {
-                        target,
-                        source: this,
-                        resetOnCancel: false,
-                        playType: PlayTypes.PlayFromHand,
-                        playAction: target
-                            ? [
-                                  new PlayCharacterAsIfFromHandAtHome(target),
-                                  new PlayDisguisedCharacterAsIfFromHandAtHome(target)
-                              ]
-                            : undefined,
-                        ignoredRequirements: ['phase']
-                    };
-                })
+                gameAction: AbilityDsl.actions.sequential([
+                    AbilityDsl.actions.playerLastingEffect((context) => ({
+                        targetController: context.player,
+                        duration: Durations.UntilSelfPassPriority,
+                        effect: AbilityDsl.effects.reduceCost({
+                            match: (card) => card === context.targets[0],
+                            amount: 1
+                        })
+                    })),
+                    AbilityDsl.actions.playCard((context) => {
+                        const target = context.targets[0];
+                        return {
+                            target,
+                            source: this,
+                            resetOnCancel: false,
+                            playType: PlayTypes.Other,
+                            playAction: target ? [new PlayCharacterAsIfFromHandAtHome(target)] : undefined,
+                            ignoredRequirements: ['phase']
+                        };
+                    })
+                ])
             })
         });
     }

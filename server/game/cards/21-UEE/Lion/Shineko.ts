@@ -13,7 +13,7 @@ export default class Shineko extends DrawCard {
                 amount: (_, player) =>
                     player.cardsInPlay.some(
                         (card: DrawCard) =>
-                            card.getType() === CardTypes.Character && card.hasSomeTrait('shugenja', 'beastmaster')
+                            card.getType() === CardTypes.Character && card.hasSomeTrait('scout', 'beastmaster')
                     )
                         ? 1
                         : 0,
