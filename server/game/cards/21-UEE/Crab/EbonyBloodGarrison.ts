@@ -1,6 +1,7 @@
 import { StrongholdCard } from '../../../StrongholdCard';
 import AbilityDsl from '../../../abilitydsl';
 import { CardTypes, Locations, Phases, Players } from '../../../Constants';
+import { ProvinceCard } from '../../../ProvinceCard';
 
 const MY_PROVINCE = 'myProvince';
 const OPP_PROVINCE = 'oppProvince';
@@ -20,14 +21,16 @@ export default class EbonyBloodGarrison extends StrongholdCard {
                     controller: Players.Self,
                     cardType: CardTypes.Province,
                     location: Locations.Provinces,
-                    cardCondition: (card) => card.facedown && !card.isStronghold
+                    cardCondition: (card: ProvinceCard) =>
+                        card.facedown && card.location !== Locations.StrongholdProvince
                 },
                 [OPP_PROVINCE]: {
                     dependsOn: MY_PROVINCE,
                     controller: Players.Opponent,
                     cardType: CardTypes.Province,
                     location: Locations.Provinces,
-                    cardCondition: (card) => card.facedown && !card.isStronghold
+                    cardCondition: (card: ProvinceCard) =>
+                        card.facedown && card.location !== Locations.StrongholdProvince
                 }
             },
             gameAction: AbilityDsl.actions.sequentialContext((context) => ({
@@ -36,10 +39,12 @@ export default class EbonyBloodGarrison extends StrongholdCard {
                     AbilityDsl.actions.breakProvince({ target: context.targets[MY_PROVINCE] }),
                     AbilityDsl.actions.reveal({ target: context.targets[OPP_PROVINCE] }),
                     AbilityDsl.actions.breakProvince({ target: context.targets[OPP_PROVINCE] }),
-                    AbilityDsl.actions.draw(),
-                    AbilityDsl.actions.gainFate()
+                    AbilityDsl.actions.draw({ target: context.player, amount: 1 }),
+                    AbilityDsl.actions.gainFate({ target: context.player, amount: 1 })
                 ]
-            }))
+            })),
+            effect: 'drag {1} into chaos',
+            effectArgs: (context) => [context.player.opponent]
         });
     }
 }
