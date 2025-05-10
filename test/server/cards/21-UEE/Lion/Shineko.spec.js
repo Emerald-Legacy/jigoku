@@ -56,5 +56,72 @@ describe('Shineko', function () {
                 expect(this.player1.fate).toBe(initialFate - 2);
             });
         });
+
+        describe('Discount ability', function () {
+            beforeEach(function () {
+                this.setupTest({
+                    phase: 'conflict',
+                    player1: {
+                        inPlay: ['shineko', 'matsu-berserker'],
+                    },
+                    player2: {
+                        inPlay: ['daidoji-ienori'],
+                        hand: ['for-shame','at-any-cost'],
+                    }
+                });
+
+                this.shineko = this.player1.findCardByName('shineko');
+                this.matsuBerserker = this.player1.findCardByName('matsu-berserker');
+                this.daidojiIenori = this.player2.findCardByName('daidoji-ienori');
+                this.forShame = this.player2.findCardByName('for-shame');
+                this.atAnyCost = this.player2.findCardByName('at-any-cost');
+            });
+
+            it('intercepts events', function () {
+                this.noMoreActions();
+                this.initiateConflict({
+                    type: 'military',
+                    attackers: [this.shineko, this.matsuBerserker],
+                    defenders: [this.daidojiIenori]
+                });
+                this.player2.clickCard(this.forShame);
+                expect(this.player2).toBeAbleToSelect(this.shineko);
+                expect(this.player2).not.toBeAbleToSelect(this.matsuBerserker);
+            });
+
+            it('intercepts character abilities', function () {
+                this.noMoreActions();
+                this.initiateConflict({
+                    type: 'military',
+                    attackers: [this.shineko, this.matsuBerserker],
+                    defenders: [this.daidojiIenori]
+                });
+                this.player2.clickCard(this.daidojiIenori);
+                expect(this.player2).toBeAbleToSelect(this.shineko);
+                expect(this.player2).not.toBeAbleToSelect(this.matsuBerserker);
+                expect(this.player2).not.toBeAbleToSelect(this.daidojiIenori);
+            });
+
+            it('does not work from home', function () {
+                this.noMoreActions();
+                this.initiateConflict({
+                    type: 'military',
+                    attackers: [ this.matsuBerserker],
+                    defenders: [this.daidojiIenori]
+                });
+                this.player2.clickCard(this.atAnyCost);
+                expect(this.player2).toBeAbleToSelect(this.shineko);
+                expect(this.player2).toBeAbleToSelect(this.matsuBerserker);
+                expect(this.player2).toBeAbleToSelect(this.daidojiIenori);
+            });
+
+            it('does not work outside conflicts', function () {
+                this.player1.pass()
+                this.player2.clickCard(this.atAnyCost);
+                expect(this.player2).toBeAbleToSelect(this.shineko);
+                expect(this.player2).toBeAbleToSelect(this.matsuBerserker);
+                expect(this.player2).toBeAbleToSelect(this.daidojiIenori);
+            });
+        });
     });
 });
