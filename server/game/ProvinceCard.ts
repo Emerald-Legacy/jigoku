@@ -203,6 +203,8 @@ export class ProvinceCard extends BaseCard {
             return;
         }
 
+        if (!this.game.isDuringConflict()) return
+
         for (const dynastyCard of this.cardsInSelf()) {
             if (!dynastyCard) {
                 // Why?
@@ -217,7 +219,7 @@ export class ProvinceCard extends BaseCard {
                 activePromptTitle: `Do you wish to discard ${
                     dynastyCard.isFacedown() ? 'the facedown card' : dynastyCard.name
                 }?`,
-                source: 'Break ' + this.name,
+                source: `Break ${this.name}`,
                 choices: ['Yes', 'No'],
                 handlers: [
                     () => {
