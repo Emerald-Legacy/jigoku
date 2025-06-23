@@ -21,14 +21,14 @@ export default class TillTheLastOneFalls extends DrawCard {
                 }))
             },
             effect: 'give {0} +{1}{2}/+{1}{3}',
-            effectArgs: (context) => [this.#bonus(context), 'military', 'political']
+            effectArgs: (context) => [this.#bonus(context), 'military', 'political'],
+            max: AbilityDsl.limit.perConflict(1)
         });
     }
 
     #bonus(context: AbilityContext): number {
         const conflict = context.game.currentConflict as Conflict;
         const opponentCount = conflict.getNumberOfParticipantsFor(context.player.opponent);
-        const playerCount = conflict.getNumberOfParticipantsFor(context.player);
-        return Math.max(0, 2 * (opponentCount - playerCount));
+        return 2 * opponentCount;
     }
 }
