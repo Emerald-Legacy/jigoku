@@ -16,11 +16,16 @@ export default class SerenadeOfAThousandLanterns extends DrawCard {
                 cardStat: (card) => card.getCost(),
                 maxStat: () => 4,
                 cardType: CardTypes.Character,
-                cardCondition: (card, context) =>
-                    card.isParticipating() && (!card.isUnique() || context.player.hasAffinity('fire', context)),
+                cardCondition: (card, context) => card.isParticipating() && !card.isUnique(),
                 gameAction: AbilityDsl.actions.sendHome()
             },
-            max: AbilityDsl.limit.perConflict(1)
+            max: AbilityDsl.limit.perConflict(1),
+            then: (context) => ({
+                gameAction: AbilityDsl.actions.onAffinity({
+                    trait: 'fire',
+                    gameAction: AbilityDsl.actions.gainHonor()
+                })
+            })
         });
     }
 }
