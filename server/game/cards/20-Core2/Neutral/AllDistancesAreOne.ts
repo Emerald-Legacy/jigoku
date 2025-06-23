@@ -50,8 +50,12 @@ export default class AllDistancesAreOne extends DrawCard {
                     promptTitleForConfirmingAffinity: 'Flip the original province facedown?',
                     effect: 'flip {0} facedown',
                     effectArgs: (context) => [context[CAPTURED_ORIGINAL_PROVINCE]],
-                    gameAction: AbilityDsl.actions.turnFacedown({
-                        target: context[CAPTURED_ORIGINAL_PROVINCE] as ProvinceCard
+                    gameAction: AbilityDsl.actions.conditional({
+                        condition: (context) => !(context[CAPTURED_ORIGINAL_PROVINCE] as ProvinceCard).isBroken,
+                        trueGameAction: AbilityDsl.actions.turnFacedown({
+                            target: context[CAPTURED_ORIGINAL_PROVINCE] as ProvinceCard
+                        }),
+                        falseGameAction: AbilityDsl.actions.noAction()
                     })
                 })
             })
