@@ -116,7 +116,7 @@ describe('Daidoji Akikore', function () {
             expect(this.getChatLogs(10)).toContain('Kakita Toshimoko: 4 vs 2: Brash Samurai');
         });
 
-        it('should trigger from home', function () {
+        it('should not trigger from home', function () {
             this.noMoreActions();
             this.initiateConflict({
                 attackers: [this.brash],
@@ -124,18 +124,9 @@ describe('Daidoji Akikore', function () {
             });
 
             this.player2.pass();
+            expect(this.player1).toHavePrompt('Conflict Action Window');
             this.player1.clickCard(this.akikore);
-            expect(this.player2).toBeAbleToSelect(this.toshimoko);
-            this.player2.clickCard(this.toshimoko);
-
-            expect(this.getChatLogs(10)).toContain('player1 uses Daidōji Akikore to initiate a military duel : Daidōji Akikore vs. Kakita Toshimoko');
-
-            this.player1.clickPrompt('3');
-            this.player2.clickPrompt('1');
-
-            expect(this.getChatLogs(10)).toContain('Daidōji Akikore: 6 vs 5: Kakita Toshimoko');
-            expect(this.getChatLogs(10)).toContain("Duel Effect: add 3 to player1's side for this conflict");
-            expect(this.getChatLogs(10)).toContain('Military Air conflict - Attacker: 5 Defender: 4');
+            expect(this.player1).toHavePrompt('Conflict Action Window');
         });
 
         it('should not trigger if opponent has no participating characters', function () {

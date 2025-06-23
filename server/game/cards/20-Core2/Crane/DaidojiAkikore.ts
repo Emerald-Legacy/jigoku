@@ -23,7 +23,6 @@ export default class DaidojiAkikore extends DrawCard {
             initiateDuel: (context) => ({
                 type: DuelTypes.Military,
                 opponentChoosesDuelTarget: true,
-                challengerCondition: (card, context) => context.game.isDuringConflict(),
                 message: '{0}{1}{2}',
                 messageArgs: (duel) =>
                     duel.winningPlayer === context.player
