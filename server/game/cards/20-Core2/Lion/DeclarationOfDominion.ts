@@ -3,7 +3,7 @@ import AbilityDsl from '../../../abilitydsl';
 import type DrawCard from '../../../drawcard';
 import { BattlefieldAttachment } from '../../BattlefieldAttachment';
 
-export default class DaclarationOfDominion extends BattlefieldAttachment {
+export default class DeclarationOfDominion extends BattlefieldAttachment {
     static id = 'declaration-of-dominion';
 
     public setupCardAbilities() {
@@ -45,5 +45,9 @@ export default class DaclarationOfDominion extends BattlefieldAttachment {
                 )
             ]
         });
+    }
+
+    protected unbrokenOnly() {
+        return false;
     }
 }
