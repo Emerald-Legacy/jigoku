@@ -14,14 +14,14 @@ export default class WolfsProposal extends DrawCard {
                         action: AbilityDsl.actions.cardLastingEffect((context) => ({
                             target: context.source.parent,
                             duration: Durations.UntilEndOfPhase,
-                            effect: AbilityDsl.effects.modifyGlory(1)
+                            effect: AbilityDsl.effects.modifyGlory(2)
                         }))
                     },
                     'Decrease glory': {
                         action: AbilityDsl.actions.cardLastingEffect((context) => ({
                             target: context.source.parent,
                             duration: Durations.UntilEndOfPhase,
-                            effect: AbilityDsl.effects.modifyGlory(-1)
+                            effect: AbilityDsl.effects.modifyGlory(-2)
                         }))
                     }
                 }
