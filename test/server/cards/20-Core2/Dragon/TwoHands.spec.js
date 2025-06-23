@@ -41,31 +41,27 @@ describe('Two Hands', function () {
 
             it('sets one enemy character skills equal to the other', function () {
                 this.initiateConflict({
+                    type: 'military',
                     attackers: [this.challenger, this.yoshi],
                     defenders: [this.toshimoko]
                 });
 
                 this.player2.clickCard(this.hands);
-                expect(this.player2).toHavePrompt('Choose the character that will remain unchanged');
-                expect(this.player2).toBeAbleToSelect(this.challenger);
-                expect(this.player2).toBeAbleToSelect(this.yoshi);
-                expect(this.player2).not.toBeAbleToSelect(this.yojiro);
-                expect(this.player2).not.toBeAbleToSelect(this.toshimoko);
+                expect(this.player1).toHavePrompt('Choose two characters');
+                expect(this.player1).toBeAbleToSelect(this.challenger);
+                expect(this.player1).toBeAbleToSelect(this.yoshi);
+                expect(this.player1).not.toBeAbleToSelect(this.yojiro);
+                expect(this.player1).not.toBeAbleToSelect(this.toshimoko);
 
-                this.player2.clickCard(this.yoshi);
-                expect(this.player2).toHavePrompt('Choose the character to that will have their skills changed');
-                expect(this.player2).toBeAbleToSelect(this.challenger);
-                expect(this.player2).not.toBeAbleToSelect(this.yoshi);
-                expect(this.player2).not.toBeAbleToSelect(this.yojiro);
-                expect(this.player2).not.toBeAbleToSelect(this.toshimoko);
-
-                this.player2.clickCard(this.challenger);
+                this.player1.clickCard(this.yoshi);
+                this.player1.clickCard(this.challenger);
+                this.player1.clickPrompt('Done');
                 expect(this.challenger.getMilitarySkill()).toBe(2);
-                expect(this.challenger.getPoliticalSkill()).toBe(6);
                 expect(this.yoshi.getMilitarySkill()).toBe(2);
+                expect(this.challenger.getPoliticalSkill()).toBe(3);
                 expect(this.yoshi.getPoliticalSkill()).toBe(6);
                 expect(this.getChatLogs(5)).toContain(
-                    'player2 plays Two Hands to set Doji Challenger military and political skills equal to Kakita Yoshi'
+                    "player2 plays Two Hands to set Kakita Yoshi and Doji Challenger military skills equal to 2"
                 );
             });
         });

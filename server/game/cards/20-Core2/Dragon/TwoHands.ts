@@ -1,10 +1,8 @@
-import { CardTypes, Players } from '../../../Constants';
+import { CardTypes, ConflictTypes, Players, TargetModes } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';
 import { Conflict } from '../../../conflict';
-
-const ORIGINAL = 'original';
-const CLONE = 'clone';
+import { AbilityContext } from '../../../AbilityContext';
 
 export default class TwoHands extends DrawCard {
     static id = 'two-hands';
@@ -22,7 +20,7 @@ export default class TwoHands extends DrawCard {
         });
 
         this.action({
-            title: 'Set the skill of one enemy character equal to another enemy character',
+            title: 'Set the skill of two enemy character to the lowest between them',
             condition: (context) =>
                 context.game.currentConflict instanceof Conflict &&
                 context.player.cardsInPlay.some(
@@ -31,33 +29,47 @@ export default class TwoHands extends DrawCard {
                 ) &&
                 context.game.currentConflict.getNumberOfParticipantsFor(context.player.opponent) >
                     context.game.currentConflict.getNumberOfParticipantsFor(context.player),
-            targets: {
-                [ORIGINAL]: {
-                    activePromptTitle: 'Choose the character that will remain unchanged',
-                    cardType: CardTypes.Character,
-                    controller: Players.Opponent,
-                    cardCondition: (card) => card.isParticipating()
-                },
-                [CLONE]: {
-                    dependsOn: ORIGINAL,
-                    activePromptTitle: 'Choose the character to that will have their skills changed',
-                    cardType: CardTypes.Character,
-                    controller: Players.Opponent,
-                    cardCondition: (card, context) => card !== context.targets[ORIGINAL] && card.isParticipating(),
-                    gameAction: AbilityDsl.actions.cardLastingEffect((context) => ({
-                        effect: [
-                            AbilityDsl.effects.setMilitarySkill(
-                                (context.targets[ORIGINAL] as DrawCard).getMilitarySkill()
-                            ),
-                            AbilityDsl.effects.setPoliticalSkill(
-                                (context.targets[ORIGINAL] as DrawCard).getPoliticalSkill()
-                            )
-                        ]
-                    }))
-                }
+            target: {
+                activePromptTitle: 'Choose two characters',
+                mode: TargetModes.Exactly,
+                numCards: 2,
+                cardType: CardTypes.Character,
+                controller: Players.Opponent,
+                player: Players.Opponent,
+                cardCondition: (card) => card.isParticipating(),
+                gameAction: AbilityDsl.actions.cardLastingEffect((context) => {
+                    const twoHands = calcTwoHandsEffect(context);
+                    return {
+                        target: twoHands.targets,
+                        effect:
+                            twoHands.type === 'military'
+                                ? AbilityDsl.effects.setMilitarySkill(twoHands.value)
+                                : AbilityDsl.effects.setPoliticalSkill(twoHands.value)
+                    };
+                })
             },
-            effect: 'set {1} {3} and {4} skills equal to {2}',
-            effectArgs: (context) => [context.targets[CLONE], context.targets[ORIGINAL], 'military', 'political']
+            effect: 'set {1} {2} skills equal to {3}',
+            effectArgs: (context) => {
+                const twoHands = calcTwoHandsEffect(context);
+                return [twoHands.targets, twoHands.type, twoHands.value];
+            }
         });
     }
+}
+
+function calcTwoHandsEffect(context: AbilityContext) {
+    const targets = Array.isArray(context.target) ? context.target : context.target ? [context.target] : [];
+    if ((context.game.currentConflict as Conflict).conflictType === ConflictTypes.Military) {
+        return {
+            targets,
+            type: 'military',
+            value: Math.min(...targets.map((card: DrawCard) => card.getMilitarySkill()))
+        };
+    }
+
+    return {
+        targets,
+        type: 'political',
+        value: Math.min(...targets.map((card: DrawCard) => card.getPoliticalSkill()))
+    };
 }
