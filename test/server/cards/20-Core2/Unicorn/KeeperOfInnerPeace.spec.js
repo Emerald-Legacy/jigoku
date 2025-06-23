@@ -8,6 +8,7 @@ describe('Keeper of Inner Peace', function () {
                     inPlay: ['matsu-berserker']
                 },
                 player2: {
+                    hand: ['a-legion-of-one'],
                     inPlay: ['keeper-of-inner-peace', 'moto-youth']
                 }
             });
@@ -20,6 +21,7 @@ describe('Keeper of Inner Peace', function () {
             this.keeperOfInnerPeace.modifyFate(1);
             this.motoYouth = this.player2.findCardByName('moto-youth');
             this.motoYouth.modifyFate(1);
+            this.legionOfOne = this.player2.findCardByName('a-legion-of-one');
 
             this.noMoreActions();
         });
@@ -65,13 +67,29 @@ describe('Keeper of Inner Peace', function () {
             expect(this.motoYouth.fate).toBe(1);
             expect(this.motoYouth.bowed).toBe(true);
             expect(this.motoYouth.inConflict).toBe(false);
-            expect(this.getChatLogs(5)).toContain('player2 uses Keeper of InnerPeace to place 1 fate on Moto Youth');
+            expect(this.getChatLogs(5)).toContain('player2 uses Keeper of Inner Peace to place 1 fate on Moto Youth');
         });
 
         it('does not protect fate from framework effects', function () {
             this.advancePhases('fate');
             expect(this.player2).not.toHavePrompt('Triggered Abilities');
             expect(this.keeperOfInnerPeace.fate).toBe(0);
+        });
+
+        it('does not work on self abilities', function () {
+            this.initiateConflict({
+                type: 'military',
+                ring: 'void',
+                attackers: [this.matsuBerserker],
+                defenders: [ this.motoYouth]
+            });
+
+            this.player2.clickCard(this.legionOfOne);
+            this.player2.clickCard(this.motoYouth);
+            this.player2.clickPrompt('Remove 1 fate to resolve this ability again');
+            this.player2.clickCard(this.motoYouth);
+
+            expect(this.player2).not.toHavePrompt('Any reactions to Fate being moved from Moto Youth?');
         });
     });
 });
