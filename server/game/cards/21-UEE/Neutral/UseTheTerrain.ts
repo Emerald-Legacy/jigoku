@@ -15,8 +15,7 @@ export default class UseTheTerrain extends DrawCard {
                 duration: Durations.UntilEndOfConflict
             })),
             effect: 'give all characters they control +{1}{2}',
-            effectArgs: (context) => [this.#hasKicker(context) ? 2 : 1, 'military'],
-            max: AbilityDsl.limit.perConflict(1)
+            effectArgs: (context) => [this.#hasKicker(context) ? 2 : 1, 'military']
         });
     }
 

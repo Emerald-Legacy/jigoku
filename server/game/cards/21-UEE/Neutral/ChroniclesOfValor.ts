@@ -10,7 +10,7 @@ export default class ChroniclesOfValor extends DrawCard {
             title: 'Discard a character',
             when: {
                 afterConflict: ({ conflict }: { conflict: Conflict }, context) =>
-                    conflict.winner === context.player && conflict.attackerSkill + conflict.defenderSkill >= 30
+                    conflict.winner === context.player && conflict.attackerSkill + conflict.defenderSkill >= 25
             },
             gameAction: AbilityDsl.actions.takeHonor((context) => ({
                 amount: context.player.isCharacterTraitInPlay('storyteller') ? 2 : 1
