@@ -44,12 +44,13 @@ class Effect {
         this.refreshContext();
         this.effect.duration = this.duration;
         this.effect.isConditional = !!properties.condition;
+        this.endingMessage = properties.endingMessage || undefined;
     }
 
     refreshContext() {
         this.context = this.game.getFrameworkContext(this.source.controller);
         this.context.source = this.source;
-        if(this.ability) {
+        if (this.ability) {
             this.context.ability = this.ability;
         }
         this.effect.setContext(this.context);
@@ -91,7 +92,7 @@ class Effect {
     }
 
     isEffectActive() {
-        if(this.duration !== Durations.Persistent) {
+        if (this.duration !== Durations.Persistent) {
             return true;
         }
         let effectOnSource = this.source.persistentEffects.some(effect => effect.ref && effect.ref.includes(this));
@@ -99,11 +100,11 @@ class Effect {
     }
 
     checkCondition(stateChanged) {
-        if(!this.condition(this.context) || !this.isEffectActive()) {
+        if (!this.condition(this.context) || !this.isEffectActive()) {
             stateChanged = this.targets.length > 0 || stateChanged;
             this.cancel();
             return stateChanged;
-        } else if(_.isFunction(this.match)) {
+        } else if (_.isFunction(this.match)) {
             // Get any targets which are no longer valid
             let invalidTargets = _.filter(this.targets, target => !this.match(target, this.context) || !this.isValidTarget(target));
             // Remove invalid targets
@@ -116,13 +117,13 @@ class Effect {
             // Apply the effect to new targets
             _.each(newTargets, target => this.addTarget(target));
             return stateChanged || newTargets.length > 0;
-        } else if(this.targets.includes(this.match)) {
-            if(!this.isValidTarget(this.match)) {
+        } else if (this.targets.includes(this.match)) {
+            if (!this.isValidTarget(this.match)) {
                 this.cancel();
                 return true;
             }
             return this.effect.recalculate(this.match) || stateChanged;
-        } else if(!this.targets.includes(this.match) && this.isValidTarget(this.match)) {
+        } else if (!this.targets.includes(this.match) && this.isValidTarget(this.match)) {
             this.addTarget(this.match);
             return true;
         }

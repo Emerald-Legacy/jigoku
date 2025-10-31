@@ -9,15 +9,22 @@ export class GainAllAbilities extends EffectValue<BaseCard> {
     reactions: Array<GainAbility>;
     persistentEffects: Array<any>;
     abilitiesForTargets: Record<string, undefined | { actions: Array<GainAbility>; reactions: Array<GainAbility> }>;
+    printedOnly: boolean;
 
-    constructor(card: BaseCard) {
+    constructor(card: BaseCard, printedOnly = false) {
         super(card);
-        this.actions = card.abilities.actions.map((action) => new GainAbility(AbilityTypes.Action, action));
+        this.printedOnly = printedOnly;
+        this.actions = card.abilities.actions
+            .filter(action => !this.printedOnly || action.printedAbility)
+            .map((action) => new GainAbility(AbilityTypes.Action, action));
         //Need to ignore keyword reactions or we double up on the pride / courtesy / sincerity triggers
         this.reactions = card.abilities.reactions
+            .filter(a => !this.printedOnly || a.printedAbility)
             .filter((a) => !a.isKeywordAbility())
             .map((ability) => new GainAbility(ability.abilityType, ability));
-        this.persistentEffects = card.abilities.persistentEffects.map((effect) => Object.assign({}, effect));
+        this.persistentEffects = card.abilities.persistentEffects
+            // .filter(a => !this.printedOnly || a.printedAbility)
+            .map((effect) => Object.assign({}, effect));
         this.abilitiesForTargets = {};
     }
 
@@ -72,6 +79,6 @@ export class GainAllAbilities extends EffectValue<BaseCard> {
     }
 }
 
-export function gainAllAbilities(character: BaseCard) {
-    return EffectBuilder.card.static(EffectNames.GainAllAbilities, new GainAllAbilities(character));
+export function gainAllAbilities(character: BaseCard, printedOnly: boolean = false) {
+    return EffectBuilder.card.static(EffectNames.GainAllAbilities, new GainAllAbilities(character, printedOnly));
 }

@@ -41,6 +41,7 @@ import { HonorBidAction, HonorBidProperties } from './HonorBidAction';
 import { IfAbleAction, IfAbleActionProperties } from './IfAbleAction';
 import { InitiateConflictAction, InitiateConflictProperties } from './InitiateConflictAction';
 import { JointGameAction } from './JointGameAction';
+import { JointGameContextProperties, JointGameContextAction } from './JointGameContextAction';
 import { LastingEffectAction, LastingEffectProperties } from './LastingEffectAction';
 import { LastingEffectCardAction, LastingEffectCardProperties } from './LastingEffectCardAction';
 import { LastingEffectRingAction, LastingEffectRingProperties } from './LastingEffectRingAction';
@@ -483,6 +484,9 @@ export function ifAble(propertyFactory: PropsFactory<IfAbleActionProperties>): G
 }
 export function joint(gameActions: GameAction[]): GameAction {
     return new JointGameAction(gameActions);
+} // takes an array of gameActions, not a propertyFactory
+export function jointContext(propertyFactory: PropsFactory<JointGameContextProperties>): GameAction {
+    return new JointGameContextAction(propertyFactory);
 } // takes an array of gameActions, not a propertyFactory
 export function multiple(gameActions: GameAction[]): GameAction {
     return new MultipleGameAction(gameActions);

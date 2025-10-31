@@ -44,11 +44,13 @@ export class EffectEngine {
             } else {
                 const triggeringEvents = events.filter((event) => properties.when[event.name]);
                 if (triggeringEvents.length > 0) {
-                    if (!properties.multipleTrigger && effect.duration !== Durations.Persistent) {
-                        effectsToRemove.push(effect);
-                    }
+                    let effectTriggered = false;
                     if (triggeringEvents.some((event) => properties.when[event.name](event, effect.context))) {
                         effectsToTrigger.push(effect);
+                        effectTriggered = true;
+                    }
+                    if (!properties.multipleTrigger && effect.duration !== Durations.Persistent && (!properties.onlyRemoveOnSuccess || effectTriggered)) {
+                        effectsToRemove.push(effect);
                     }
                 }
             }
@@ -192,6 +194,9 @@ export class EffectEngine {
                 customDurationEffect.cancel();
                 this.unregisterCustomDurationEvents(customDurationEffect);
                 this.effects = this.effects.filter((effect) => effect !== customDurationEffect);
+                if (customDurationEffect.endingMessage) {
+                    this.game.addMessage(customDurationEffect.endingMessage);
+                }
             }
         };
     }

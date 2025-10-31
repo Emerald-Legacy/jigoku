@@ -789,7 +789,7 @@ export function optional(cost: Cost): Cost {
                 () => {
                     context.costs[actionName] = true;
                 },
-                () => {}
+                () => { }
             ];
 
             if (result.canCancel) {
@@ -1057,7 +1057,7 @@ export function nameCard(): Cost {
                 }
             });
         },
-        pay() {}
+        pay() { }
     };
 }
 
@@ -1089,4 +1089,26 @@ export function switchLocation(): Cost {
             return action.getEvent(context.costs.switchLocation, context);
         }
     };
+}
+
+export function dishonorAndSacrifice(properties: SelectCostProperties): Cost {
+    const gameAction = GameActions.multiple([
+        GameActions.dishonor(),
+        GameActions.sacrifice(),
+    ]);
+    gameAction.name = 'dishonorAndSacrifice';
+
+    const actionCost = new MetaActionCost(
+        GameActions.selectCard(Object.assign({
+            gameAction
+        }, properties)),
+        "Choose a card to dishonor and sacrifice"
+    );
+
+    actionCost.getActionName = () => 'dishonorAndSacrifice';
+    actionCost.getCostMessage = (context: AbilityContext): [string, any[]] => {
+        return ['dishonoring and sacrificing {1}', [context.costs.dishonorAndSacrifice]];
+    };
+
+    return actionCost;
 }

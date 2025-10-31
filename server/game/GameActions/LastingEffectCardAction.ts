@@ -12,7 +12,7 @@ export interface LastingEffectCardProperties extends LastingEffectGeneralPropert
 
 export class LastingEffectCardAction<
     P extends LastingEffectCardProperties = LastingEffectCardProperties
-    // @ts-ignore
+// @ts-ignore
 > extends CardGameAction<P> {
     name = 'applyLastingEffect';
     eventName = EventNames.OnEffectApplied;
@@ -47,6 +47,19 @@ export class LastingEffectCardAction<
                     !lastingEffectRestrictions.some((condition) => condition(props.effect))
             )
         );
+    }
+
+    addPropertiesToEvent(event, card: BaseCard, context: AbilityContext, additionalProperties): void {
+        super.addPropertiesToEvent(event, card, context, additionalProperties);
+        const { effect, ...otherProperties } = this.getProperties(context, additionalProperties);
+        const effectProperties = Object.assign({ match: event.card, location: Locations.Any }, otherProperties);
+        let effects = effect.map((factory) =>
+            factory(event.context.game, event.context.source, effectProperties)
+        );
+
+        event.effectTypes = effects.map(_effect => _effect.effect.type);
+        const matches = effects.map(_effect => _effect.match);
+        event.matches = Array.isArray(matches) ? matches : [matches];
     }
 
     eventHandler(event, additionalProperties): void {
