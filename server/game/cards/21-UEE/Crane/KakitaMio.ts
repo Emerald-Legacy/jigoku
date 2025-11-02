@@ -43,7 +43,7 @@ export default class KakitaMio extends DrawCard {
         this.persistentEffect({
             condition: (context) =>
                 context.game.currentConflict instanceof Conflict &&
-                context.game.currentConflict.getNumberOfParticipants((card) => card.hasTrait('shadowlands')) > 0,
+                context.game.currentConflict.getNumberOfParticipantsFor(context.player.opponent, (card) => (card.hasTrait('shadowlands') || card.isTainted)) > 0,
             match: (card, context) =>
                 card.type === CardTypes.Character &&
                 card.isParticipatingFor(context.player) &&
