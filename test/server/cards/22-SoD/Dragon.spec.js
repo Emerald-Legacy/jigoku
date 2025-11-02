@@ -204,6 +204,123 @@ describe('SoD - Dragon', function () {
                 expect(this.getChatLogs(5)).toContain('Togashi Yokuni is injured because it is not contributing skill to the current conflict');
             });
         });
+
+        describe('Kayo', function () {
+            beforeEach(function () {
+                this.setupTest({
+                    phase: 'conflict',
+                    player1: {
+                        inPlay: ['kayo-the-shrinetender', 'venerable-fortunist'],
+                        stronghold: ['temple-of-the-fivefold-path'],
+                        hand: ['good-omen', 'good-omen'],
+                        dynastyDiscard: ['adorned-temple'],
+                        provinces: ['sacred-sanctuary'],
+                    },
+                    player2: {
+                        inPlay: ['keeper-initiate', 'doji-diplomat'],
+                        hand: ['assassination', 'let-go', 'duelist-training'],
+                    }
+                });
+
+                this.kayo = this.player1.findCardByName('kayo-the-shrinetender');
+                this.keeper = this.player1.findCardByName('venerable-fortunist');
+                this.diplomat = this.player2.findCardByName('doji-diplomat');
+                this.omen1 = this.player1.filterCardsByName('good-omen')[0];
+                this.omen2 = this.player1.filterCardsByName('good-omen')[1];
+
+                this.sh = this.player1.findCardByName('temple-of-the-fivefold-path');
+                this.sacred = this.player1.findCardByName('sacred-sanctuary');
+                this.adorned = this.player1.findCardByName('adorned-temple');
+                this.player1.placeCardInProvince(this.adorned, 'province 1');
+
+                this.keeper.honor();
+            });
+
+            it('stronghold', function () {
+                this.player1.clickCard(this.sh);
+                this.player1.clickRing('fire');
+
+                expect(this.getChatLogs(5)).toContain('player1 uses Temple of the Fivefold Path, bowing Temple of the Fivefold Path to place 1 fate on Fire Ring');
+
+                this.player2.pass();
+                this.player1.clickCard(this.kayo);
+                expect(this.player1).toBeAbleToSelect(this.sh);
+                expect(this.player1).toBeAbleToSelect(this.adorned);
+                expect(this.player1).not.toBeAbleToSelect(this.sacred); // face down
+
+                expect(this.sh.bowed).toBe(true);
+                this.player1.clickCard(this.sh);
+                expect(this.sh.bowed).toBe(false);
+
+                this.player2.pass();
+
+                this.player1.clickCard(this.sh);
+                this.player1.clickPrompt('Place fate on a ring without fate');
+                this.player1.clickRing('air');
+
+                expect(this.sh.bowed).toBe(true);
+            });
+
+            it('holding', function () {
+                let hand = this.player1.hand.length;
+                this.player1.player.showBid = 1;
+                this.player2.player.showBid = 5;
+
+                this.player1.clickCard(this.omen1);
+                this.player1.clickCard(this.keeper);
+                expect(this.player1).toBeAbleToSelect(this.adorned);
+                this.player1.clickCard(this.adorned);
+
+                this.player2.pass();
+                this.player1.clickCard(this.kayo);
+                this.player1.clickCard(this.adorned);
+                this.player2.pass();
+
+                this.player1.clickCard(this.omen2);
+                this.player1.clickCard(this.keeper);
+                expect(this.player1).toBeAbleToSelect(this.adorned);
+                this.player1.clickCard(this.adorned);
+
+                expect(this.player1.hand.length).toBe(hand);
+                expect(this.keeper.fate).toBe(2);
+            });
+
+            it('province', function () {
+                this.noMoreActions();
+                this.player1.passConflict();
+                this.noMoreActions();
+
+                this.initiateConflict({
+                    type: 'military',
+                    attackers: [this.diplomat],
+                    province: this.sacred
+                });
+
+                this.player1.clickCard(this.sacred);
+                this.player1.clickCard(this.keeper);
+                this.player1.clickCard(this.keeper);
+                this.player1.clickPrompt('Done');
+
+                this.noMoreActions();
+
+                this.noMoreActions();
+                this.player1.passConflict();
+                this.diplomat.bowed = false;
+                this.player1.clickCard(this.kayo);
+                this.player1.clickCard(this.sacred);
+                this.noMoreActions();
+
+                this.initiateConflict({
+                    type: 'political',
+                    attackers: [this.diplomat],
+                    province: this.sacred,
+                    ring: 'fire'
+                });
+
+                expect(this.player1).toHavePrompt('Triggered Abilities');
+                expect(this.player1).toBeAbleToSelect(this.sacred);
+            });
+        });
     });
 });
 

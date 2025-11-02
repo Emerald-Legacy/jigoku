@@ -1,4 +1,4 @@
-import { Players, Durations, Locations } from '../../../Constants';
+import { Players, Durations, Locations, CardTypes } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';
 
@@ -9,8 +9,9 @@ export default class KayoTheShrinetender extends DrawCard {
         this.action({
             title: 'Ready a Temple',
             target: {
-                cardCondition: card => card.hasTrait('temple'),
+                cardCondition: card => card.hasTrait('temple') && !card.facedown,
                 controller: Players.Self,
+                location: [Locations.Provinces, Locations.PlayArea],
                 gameAction: AbilityDsl.actions.multiple([
                     AbilityDsl.actions.ready(),
                     AbilityDsl.actions.cardLastingEffect({
