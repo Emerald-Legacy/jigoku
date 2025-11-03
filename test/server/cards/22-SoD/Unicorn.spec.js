@@ -27,6 +27,16 @@ describe('SoD - Unicorn', function () {
             });
 
             it('should work', function () {
+                this.noMoreActions();
+
+                this.initiateConflict({
+                    type: 'military',
+                    attackers: [this.keeper],
+                    defenders: []
+                });
+
+                this.player2.pass();
+
                 this.player1.clickCard(this.campfire);
                 expect(this.player1).toBeAbleToSelect(this.liar);
                 expect(this.player1).not.toBeAbleToSelect(this.keeper);
@@ -42,6 +52,14 @@ describe('SoD - Unicorn', function () {
             it('with storyteller should work', function () {
                 this.player1.clickCard(this.singer);
                 this.player1.clickPrompt('0');
+
+                this.noMoreActions();
+
+                this.initiateConflict({
+                    type: 'military',
+                    attackers: [this.keeper],
+                    defenders: []
+                });
 
                 this.player2.pass();
 

@@ -9,6 +9,7 @@ export default class CampfireCounsel extends DrawCard {
     setupCardAbilities() {
         this.action({
             title: 'Ready a character',
+            condition: context => context.game.isDuringConflict(),
             cost: AbilityDsl.costs.sacrificeSelf(),
             target: {
                 cardType: CardTypes.Character,
