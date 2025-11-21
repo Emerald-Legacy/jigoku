@@ -7,7 +7,7 @@ export default class WisdomOfTheWind extends DrawCard {
 
     setupCardAbilities() {
         this.action({
-            title: 'Give attached character a skill bonus',
+            title: 'Honor or dishonor a character',
             effect: 'honor or dishonor {0}',
             condition: (context) =>
                 context.game.isDuringConflict() &&
@@ -15,38 +15,31 @@ export default class WisdomOfTheWind extends DrawCard {
             target: {
                 cardType: CardTypes.Character,
                 cardCondition: (card: DrawCard) => card.isParticipating(),
-                gameAction: AbilityDsl.actions.chooseAction({
-                    options: {
-                        'Honor this character': {
-                            action: AbilityDsl.actions.honor(),
-                            message: '{0} chooses to honor {1}'
-                        },
-                        'Dishonor this character': {
-                            action: AbilityDsl.actions.dishonor(),
-                            message: '{0} chooses to dishonor {1}'
+                gameAction: AbilityDsl.actions.sequential([
+                    AbilityDsl.actions.chooseAction({
+                        options: {
+                            'Honor this character': {
+                                action: AbilityDsl.actions.honor(),
+                                message: '{0} chooses to honor {1}'
+                            },
+                            'Dishonor this character': {
+                                action: AbilityDsl.actions.dishonor(),
+                                message: '{0} chooses to dishonor {1}'
+                            }
                         }
-                    }
-                })
-            },
-            then: (context) => ({
-                gameAction: AbilityDsl.actions.onAffinity({
-                    trait: 'air',
-                    promptTitleForConfirmingAffinity: 'Make other status tokens be ignored?',
-                    gameAction: AbilityDsl.actions.cardLastingEffect({
-                        target: context.game.currentConflict
-                            .getAttackers()
-                            .concat(context.game.currentConflict.getDefenders())
-                            .filter((card: DrawCard) => card !== context.target),
-                        effect: [
-                            AbilityDsl.effects.honorStatusDoesNotModifySkill(),
-                            AbilityDsl.effects.honorStatusDoesNotAffectLeavePlay(),
-                            AbilityDsl.effects.taintedStatusDoesNotCostHonor()
-                        ],
-                        duration: Durations.UntilEndOfConflict
                     }),
-                    effect: 'make all other status be ignored during this conflict'
-                })
-            })
+                    AbilityDsl.actions.onAffinity(context => ({
+                        trait: 'air',
+                        gameAction: AbilityDsl.actions.cardLastingEffect({
+                            target: context.target,
+                            effect: AbilityDsl.effects.modifyGlory(2),
+                            duration: Durations.UntilEndOfConflict
+                        }),
+                        effect: 'give {0} +2 glory',
+                        effectArgs: () => [context.target]
+                    })),
+                ])
+            },
         });
     }
 }

@@ -67,7 +67,7 @@ describe('Wisdom of the Wind', function () {
                 this.kudaka.honor();
             });
 
-            it('ignores other status tokens', function () {
+            it('gives +2 glory', function () {
                 this.player1.clickCard(this.wisdomOfTheWind);
                 expect(this.player1).toHavePrompt('Choose a character');
 
@@ -81,19 +81,8 @@ describe('Wisdom of the Wind', function () {
 
                 this.player1.clickPrompt('Honor this character');
                 expect(this.mystic.isHonored).toBe(true);
-                expect(this.getChatLogs(5)).toContain('player1 chooses to honor Miya Mystic');
-                expect(this.player1).toHavePrompt('Make other status tokens be ignored?');
-                expect(this.player1).toHavePromptButton('Yes');
-                expect(this.player1).toHavePromptButton('No');
-
-                this.player1.clickPrompt('Yes');
-                expect(this.kudaka.getMilitarySkill()).toBe(3);
-                expect(this.kudaka.getPoliticalSkill()).toBe(4);
-                expect(this.mystic.getMilitarySkill()).toBe(2);
-                expect(this.mystic.getPoliticalSkill()).toBe(2);
-                expect(this.getChatLogs(5)).toContain(
-                    'player1 channels their air affinity to make all other status be ignored during this conflict'
-                );
+                expect(this.mystic.glory).toBe(3);
+                expect(this.getChatLogs(5)).toContain('player1 channels their air affinity to give Miya Mystic +2 glory');
             });
         });
     });
