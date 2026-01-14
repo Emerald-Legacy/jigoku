@@ -84,6 +84,7 @@ class BaseCard extends EffectSource {
     isConflict: boolean = false;
     isDynasty: boolean = false;
     isStronghold: boolean = false;
+    packId: string | undefined;
 
     attachments = [] as DrawCard[];
     childCards = [] as DrawCard[];
@@ -1336,6 +1337,7 @@ class BaseCard extends EffectSource {
             location: this.location,
             menu: this.getMenu(),
             name: this.cardData.name,
+            packId: this.packId,
             popupMenuText: this.popupMenuText,
             showPopup: this.showPopup,
             tokens: this.tokens,
