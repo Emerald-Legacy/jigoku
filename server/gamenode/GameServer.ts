@@ -3,7 +3,7 @@ import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import jwt from 'jsonwebtoken';
-import socketio from 'socket.io';
+import * as socketio from 'socket.io';
 
 import { captureException } from '../ErrorMonitoring';
 import Game from '../game/game';
@@ -61,19 +61,17 @@ export class GameServer {
 
         server.listen(env.gameNodeSocketIoPort);
 
-        this.io = socketio(server, {
+        this.io = new socketio.Server(server, {
             perMessageDeflate: false,
-            path: `/${env.gameNodeName}/socket.io`
+            path: `/${env.gameNodeName}/socket.io`,
+            pingTimeout: 30000,
+            pingInterval: 25000,
+            cors: env.gameNodeOrigin ? {
+                origin: env.gameNodeOrigin.split(','),
+                credentials: true
+            } : undefined
         });
-        // @ts-ignore
-        this.io.set('heartbeat timeout', 30000);
         this.io.use(this.handshake.bind(this));
-
-        if (env.gameNodeOrigin) {
-            // @ts-ignore
-            this.io.set('origins', env.gameNodeOrigin);
-        }
-
         this.io.on('connection', this.onConnection.bind(this));
     }
 
@@ -164,15 +162,17 @@ export class GameServer {
         }
     }
 
-    handshake(socket: socketio.Socket, next: () => void) {
-        if (socket.handshake.query.token && socket.handshake.query.token !== 'undefined') {
-            jwt.verify(socket.handshake.query.token, env.secret, function (err, user) {
+    handshake(socket: socketio.Socket, next: (err?: Error) => void) {
+        // Socket.io v4 uses auth object, v1 used query string
+        const token = (socket.handshake.auth as any)?.token || socket.handshake.query?.token;
+        if (token && token !== 'undefined') {
+            jwt.verify(token as string, env.secret, function (err, user) {
                 if (err) {
                     logger.info(err);
                     return next();
                 }
 
-                socket.request.user = user;
+                (socket.request as any).user = user;
                 next();
             });
         } else {

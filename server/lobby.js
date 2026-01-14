@@ -31,8 +31,15 @@ class Lobby {
         this.router.on('onNodeReconnected', this.onNodeReconnected.bind(this));
         this.router.on('onWorkerStarted', this.onWorkerStarted.bind(this));
 
-        this.io = options.io || socketio(server, { perMessageDeflate: false });
-        this.io.set('heartbeat timeout', 30000);
+        this.io = options.io || new socketio.Server(server, {
+            perMessageDeflate: false,
+            pingTimeout: 30000,
+            pingInterval: 25000,
+            cors: {
+                origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+                credentials: true
+            }
+        });
         this.io.use(this.handshake.bind(this));
         this.io.on('connection', this.onConnection.bind(this));
 
@@ -137,8 +144,10 @@ class Lobby {
     handshake(socket, next) {
         var versionInfo = undefined;
 
-        if (socket.handshake.query.token && socket.handshake.query.token !== 'undefined') {
-            jwt.verify(socket.handshake.query.token, env.secret, function (err, user) {
+        // Socket.io v4 uses auth object, v1 used query string
+        const token = socket.handshake.auth?.token || socket.handshake.query?.token;
+        if (token && token !== 'undefined') {
+            jwt.verify(token, env.secret, function (err, user) {
                 if (err) {
                     logger.info(err);
                     return;
@@ -148,8 +157,9 @@ class Lobby {
             });
         }
 
-        if (socket.handshake.query.version) {
-            versionInfo = moment(socket.handshake.query.version);
+        const clientVersion = socket.handshake.auth?.version || socket.handshake.query?.version;
+        if (clientVersion) {
+            versionInfo = moment(clientVersion);
         }
 
         if (!versionInfo || versionInfo < version) {
