@@ -34,7 +34,7 @@
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
         "cross-env": "^7.0.3",
-        "express": "^4.18.2",
+        "express": "^5.2.1",
         "express-rate-limit": "^7.1.5",
         "express-session": "^1.17.3",
         "helmet": "^8.0.0",

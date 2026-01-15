@@ -160,8 +160,8 @@ class Server {
         });
 
         // Define error middleware last
-        app.use(function (err, req, res) {
-            // eslint-disable-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
+        app.use(function (err, req, res, next) {
             res.status(500).send({ success: false });
             logger.error(err);
         });
