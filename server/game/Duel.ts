@@ -73,15 +73,15 @@ export class Duel extends GameObject {
     }
 
     public playerCanTriggerChallenge(player: Player): boolean {
-        return !this.#modifiers.get(player)?.challenge ?? false;
+        return !(this.#modifiers.get(player)?.challenge ?? false);
     }
 
     public playerCanTriggerFocus(player: Player): boolean {
-        return !this.#modifiers.get(player)?.focus ?? false;
+        return !(this.#modifiers.get(player)?.focus ?? false);
     }
 
     public playerCanTriggerStrike(player: Player): boolean {
-        return !this.#modifiers.get(player)?.strike ?? false;
+        return !(this.#modifiers.get(player)?.strike ?? false);
     }
 
     addTargetToDuel(card: DrawCard) {
