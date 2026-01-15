@@ -79,7 +79,7 @@ class Game extends EventEmitter {
         };
         this.shortCardData = options.shortCardData || [];
 
-        details.players.forEach((player) => {
+        Object.values(details.players).forEach((player) => {
             this.playersAndSpectators[player.user.username] = new Player(
                 player.id,
                 player.user,
@@ -89,7 +89,7 @@ class Game extends EventEmitter {
             );
         });
 
-        details.spectators.forEach((spectator) => {
+        Object.values(details.spectators).forEach((spectator) => {
             this.playersAndSpectators[spectator.user.username] = new Spectator(spectator.id, spectator.user);
         });
 
