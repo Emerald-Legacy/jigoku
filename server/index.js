@@ -1,13 +1,17 @@
 const Server = require('./server.js');
 const Lobby = require('./lobby.js');
 const pmx = require('pmx');
-const monk = require('monk').default;
+const db = require('./db.js');
 const env = require('./env.js');
 
-function runServer() {
+async function runServer() {
+    // Connect to database first
+    const database = await db.connect(env.dbPath);
+
     var server = new Server(process.env.NODE_ENV !== 'production');
+    server.initDb();
     var httpServer = server.init();
-    var lobby = new Lobby(httpServer, { db: monk(env.dbPath) });
+    var lobby = new Lobby(httpServer, { db: database });
 
     pmx.action('status', (reply) => {
         var status = lobby.getStatus();

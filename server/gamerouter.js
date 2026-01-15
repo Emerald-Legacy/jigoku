@@ -1,7 +1,6 @@
 const { Router } = require('zeromq');
 const { logger } = require('./logger');
-const _ = require('underscore');
-const monk = require('monk').default;
+const db = require('./db.js');
 const EventEmitter = require('events');
 const GameService = require('./services/GameService.js');
 const env = require('./env.js');
@@ -11,7 +10,7 @@ class GameRouter extends EventEmitter {
         super();
 
         this.workers = {};
-        this.gameService = new GameService(monk(env.dbPath));
+        this.gameService = new GameService(db.getDb());
         this.router = new Router();
         this.running = false;
 
@@ -65,13 +64,14 @@ class GameRouter extends EventEmitter {
     }
 
     getNextAvailableGameNode() {
-        if (_.isEmpty(this.workers)) {
+        const workerList = Object.values(this.workers);
+        if (workerList.length === 0) {
             return undefined;
         }
 
         var returnedWorker = undefined;
 
-        _.each(this.workers, (worker) => {
+        workerList.forEach(worker => {
             if (worker.numGames >= worker.maxGames || worker.disabled) {
                 return;
             }
@@ -85,7 +85,7 @@ class GameRouter extends EventEmitter {
     }
 
     getNodeStatus() {
-        return _.map(this.workers, (worker) => {
+        return Object.values(this.workers).map(worker => {
             return {
                 name: worker.identity,
                 numGames: worker.numGames,
@@ -162,7 +162,7 @@ class GameRouter extends EventEmitter {
 
                 this.emit('onNodeReconnected', identityStr, message.arg.games);
 
-                worker.numGames = _.size(message.arg.games);
+                worker.numGames = Object.keys(message.arg.games).length;
 
                 break;
             case 'PONG':
@@ -211,7 +211,7 @@ class GameRouter extends EventEmitter {
         var currentTime = Date.now();
         const pingTimeout = 1 * 60 * 1000;
 
-        _.each(this.workers, (worker) => {
+        Object.values(this.workers).forEach(worker => {
             if (worker.pingSent && currentTime - worker.pingSent > pingTimeout) {
                 logger.info('worker', worker.identity + ' timed out');
                 delete this.workers[worker.identity];

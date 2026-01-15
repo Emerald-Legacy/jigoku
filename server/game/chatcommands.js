@@ -1,4 +1,3 @@
-const _ = require('underscore');
 const GameActions = require('./GameActions/GameActions');
 const HonorBidPrompt = require('./gamesteps/honorbidprompt.js');
 const { Locations, CardTypes, Players } = require('./Constants');
@@ -47,12 +46,12 @@ class ChatCommands {
 
     startClocks(player) {
         this.game.addMessage('{0} restarts the timers', player);
-        _.each(this.game.getPlayers(), player => player.clock.manuallyResume());
+        this.game.getPlayers().forEach(player => player.clock.manuallyResume());
     }
 
     stopClocks(player) {
         this.game.addMessage('{0} stops the timers', player);
-        _.each(this.game.getPlayers(), player => player.clock.manuallyPause());
+        this.game.getPlayers().forEach(player => player.clock.manuallyPause());
     }
 
     modifyClock(player, args) {
@@ -270,7 +269,7 @@ class ChatCommands {
         let ringElement = (args[1]);
         let num = this.getNumberOrDefault(args[2], 1);
 
-        if(_.contains(['air','earth','fire','void','water'], ringElement)) {
+        if(['air','earth','fire','void','water'].includes(ringElement)) {
             let ring = this.game.rings[ringElement];
 
             ring.modifyFate(num);
@@ -292,7 +291,7 @@ class ChatCommands {
         let ringElement = (args[1]);
         let num = this.getNumberOrDefault(args[2], 1);
 
-        if(_.contains(['air','earth','fire','void','water'], ringElement)) {
+        if(['air','earth','fire','void','water'].includes(ringElement)) {
             let ring = this.game.rings[ringElement];
 
             ring.modifyFate(-num);
@@ -313,7 +312,7 @@ class ChatCommands {
     claimRing(player, args) {
         let ringElement = (args[1]);
 
-        if(_.contains(['air','earth','fire','void','water'], ringElement)) {
+        if(['air','earth','fire','void','water'].includes(ringElement)) {
             let ring = this.game.rings[ringElement];
 
             ring.claimRing(player);
@@ -334,7 +333,7 @@ class ChatCommands {
     unclaimRing(player, args) {
         let ringElement = (args[1]);
 
-        if(_.contains(['air','earth','fire','void','water'], ringElement)) {
+        if(['air','earth','fire','void','water'].includes(ringElement)) {
             let ring = this.game.rings[ringElement];
 
             ring.resetRing();
@@ -398,7 +397,7 @@ class ChatCommands {
 
         var lowerToken = token.toLowerCase();
 
-        return _.contains(this.tokens, lowerToken);
+        return this.tokens.includes(lowerToken);
     }
 }
 

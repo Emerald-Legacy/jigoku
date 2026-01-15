@@ -1,5 +1,3 @@
-const _ = require('underscore');
-
 const CardAbility = require('./CardAbility.js');
 const { TriggeredAbilityContext } = require('./TriggeredAbilityContext.js');
 const { Stages, CardTypes, EffectNames, AbilityTypes } = require('./Constants.js');
@@ -120,10 +118,10 @@ class TriggeredAbility extends CardAbility {
             return;
         }
 
-        var eventNames = _.keys(this.when);
+        var eventNames = Object.keys(this.when);
 
         this.events = [];
-        _.each(eventNames, (eventName) => {
+        eventNames.forEach((eventName) => {
             var event = {
                 name: eventName + ':' + this.abilityType,
                 handler: (event, window) => this.eventHandler(event, window)
@@ -135,7 +133,7 @@ class TriggeredAbility extends CardAbility {
 
     unregisterEvents() {
         if (this.events) {
-            _.each(this.events, (event) => {
+            this.events.forEach((event) => {
                 this.game.removeListener(event.name, event.handler);
             });
             this.events = null;

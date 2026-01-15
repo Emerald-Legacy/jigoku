@@ -1,4 +1,3 @@
-const _ = require('underscore');
 const EffectSource = require('./EffectSource');
 const { EffectNames } = require('./Constants');
 
@@ -90,7 +89,7 @@ class Ring extends EffectSource {
                 );
             }
         }
-        return _.uniq(_.flatten(elements));
+        return [...new Set(elements.flat())];
     }
 
     hasElement(element) {

@@ -1,5 +1,3 @@
-const _ = require('underscore');
-
 const AbilityDsl = require('./abilitydsl.js');
 const { GameObject } = require('./GameObject');
 
@@ -80,12 +78,11 @@ class EffectSource extends GameObject {
      * @param {Object} properties - properties for the effect - see Effects/Effect.js
      */
     addEffectToEngine(properties) {
-        let effect = properties.effect;
-        properties = _.omit(properties, 'effect');
+        let { effect, ...rest } = properties;
         if(Array.isArray(effect)) {
-            return effect.map(factory => this.game.effectEngine.add(factory(this.game, this, properties)));
+            return effect.map(factory => this.game.effectEngine.add(factory(this.game, this, rest)));
         }
-        return [this.game.effectEngine.add(effect(this.game, this, properties))];
+        return [this.game.effectEngine.add(effect(this.game, this, rest))];
     }
 
     removeEffectFromEngine(effectArray) {

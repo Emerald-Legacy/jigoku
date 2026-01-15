@@ -1,4 +1,3 @@
-const _ = require('underscore');
 const { AbilityContext } = require('../../AbilityContext');
 const { BaseStepWithPipeline } = require('../BaseStepWithPipeline.js');
 const Costs = require('../../Costs.js');
@@ -353,7 +352,7 @@ class ConflictFlow extends BaseStepWithPipeline {
                 if (this.conflict.attackers.some((a) => a.location === Locations.PlayArea)) {
                     this.game.updateCurrentConflict(this.conflict);
                     this.conflict.declaredProvince = this.conflict.conflictProvince;
-                    _.each(this.conflict.attackers, (card) => (card.inConflict = true));
+                    this.conflict.attackers.forEach((card) => (card.inConflict = true));
                     this.game.recordConflict(this.conflict);
                     const events = [];
                     if (
@@ -685,7 +684,7 @@ class ConflictFlow extends BaseStepWithPipeline {
             this.conflict.defenders = [];
         }
 
-        _.each(this.conflict.defenders, (card) => (card.inConflict = true));
+        this.conflict.defenders.forEach((card) => (card.inConflict = true));
         this.conflict.defendingPlayer.cardsInPlay.each((card) => (card.covert = false));
 
         if (this.conflict.defenders.length > 0) {
@@ -899,19 +898,19 @@ class ConflictFlow extends BaseStepWithPipeline {
             GameActions.bow().getEvent(card, this.game.getFrameworkContext())
         );
         // Cancel any events where attacker shouldn't bow
-        _.each(attackerBowEvents, (event) => (event.cancelled = !event.card.bowsOnReturnHome()));
+        attackerBowEvents.forEach((event) => (event.cancelled = !event.card.bowsOnReturnHome()));
 
         // Create bow events for defenders
         let defenderBowEvents = this.conflict.defenders.map((card) =>
             GameActions.bow().getEvent(card, this.game.getFrameworkContext())
         );
         // Cancel any events where defender shouldn't bow
-        _.each(defenderBowEvents, (event) => (event.cancelled = !event.card.bowsOnReturnHome()));
+        defenderBowEvents.forEach((event) => (event.cancelled = !event.card.bowsOnReturnHome()));
 
         let bowEvents = attackerBowEvents.concat(defenderBowEvents);
 
         // Create a return home event for every bow event
-        let returnHomeEvents = _.map(bowEvents, (event) =>
+        let returnHomeEvents = bowEvents.map((event) =>
             this.game.getEvent(
                 EventNames.OnReturnHome,
                 { conflict: this.conflict, bowEvent: event, card: event.card },

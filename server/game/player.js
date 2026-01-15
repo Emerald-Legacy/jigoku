@@ -213,7 +213,7 @@ class Player extends GameObject {
      */
     findCard(cardList, predicate) {
         var cards = this.findCards(cardList, predicate);
-        if (!cards || _.isEmpty(cards)) {
+        if (!cards || cards.length === 0) {
             return undefined;
         }
 
@@ -346,7 +346,7 @@ class Player extends GameObject {
      * @param {Function} predicate - DrawCard => Boolean
      */
     anyCardsInPlay(predicate) {
-        return this.game.allCards.any(
+        return this.game.allCards.some(
             (card) => card.controller === this && card.location === Locations.PlayArea && predicate(card)
         );
     }
@@ -644,8 +644,7 @@ class Player extends GameObject {
             return true;
         }
 
-        return _.any(
-            this.playableLocations,
+        return this.playableLocations.some(
             (location) => (!playingType || location.playingType === playingType) && location.contains(card)
         );
     }
@@ -875,9 +874,9 @@ class Player extends GameObject {
      * @param {CostReducer} reducer
      */
     removeCostReducer(reducer) {
-        if (_.contains(this.costReducers, reducer)) {
+        if (this.costReducers.includes(reducer)) {
             reducer.unregisterEvents();
-            this.costReducers = _.reject(this.costReducers, (r) => r === reducer);
+            this.costReducers = this.costReducers.filter((r) => r !== reducer);
         }
     }
 
@@ -891,7 +890,7 @@ class Player extends GameObject {
     }
 
     removePlayableLocation(location) {
-        this.playableLocations = _.reject(this.playableLocations, (l) => l === location);
+        this.playableLocations = this.playableLocations.filter((l) => l !== location);
     }
 
     getAlternateFatePools(playingType, card, context) {
@@ -926,7 +925,7 @@ class Player extends GameObject {
             }
         });
 
-        return _.uniq(alternateFatePools);
+        return [...new Set(alternateFatePools)];
     }
 
     getMinimumCost(playingType, context, target, ignoreType = false) {
@@ -977,10 +976,10 @@ class Player extends GameObject {
 
     getTotalCostModifiers(playingType, card, target, ignoreType = false) {
         var baseCost = 0;
-        var matchingReducers = _.filter(this.costReducers, (reducer) =>
+        var matchingReducers = this.costReducers.filter((reducer) =>
             reducer.canReduce(playingType, card, target, ignoreType)
         );
-        var reducedCost = _.reduce(matchingReducers, (cost, reducer) => cost - reducer.getAmount(card, this), baseCost);
+        var reducedCost = matchingReducers.reduce((cost, reducer) => cost - reducer.getAmount(card, this), baseCost);
         return reducedCost;
     }
 
@@ -1039,8 +1038,8 @@ class Player extends GameObject {
      * @param target BaseCard
      */
     markUsedReducers(playingType, card, target = null) {
-        var matchingReducers = _.filter(this.costReducers, (reducer) => reducer.canReduce(playingType, card, target));
-        _.each(matchingReducers, (reducer) => {
+        var matchingReducers = this.costReducers.filter((reducer) => reducer.canReduce(playingType, card, target));
+        matchingReducers.forEach((reducer) => {
             reducer.markUsed();
             if (reducer.isExpired()) {
                 this.removeCostReducer(reducer);
@@ -1180,7 +1179,7 @@ class Player extends GameObject {
     }
 
     createAdditionalPile(name, properties) {
-        this.additionalPiles[name] = _.extend({ cards: _([]) }, properties);
+        this.additionalPiles[name] = Object.assign({ cards: _([]) }, properties);
     }
 
     /**
@@ -1322,7 +1321,7 @@ class Player extends GameObject {
             holding: dynastyCardLocations,
             conflictCharacter: [...conflictCardLocations, Locations.PlayArea],
             dynastyCharacter: [...dynastyCardLocations, Locations.PlayArea],
-            event: _.uniq([...conflictCardLocations, ...dynastyCardLocations, Locations.BeingPlayed]),
+            event: [...new Set([...conflictCardLocations, ...dynastyCardLocations, Locations.BeingPlayed])],
             attachment: [...conflictCardLocations, Locations.PlayArea]
         };
 
@@ -1444,7 +1443,7 @@ class Player extends GameObject {
      * Returns an Array of Rings of all rings claimed by this player
      */
     getClaimedRings() {
-        return _.filter(this.game.rings, (ring) => ring.isConsideredClaimed(this));
+        return Object.values(this.game.rings).filter((ring) => ring.isConsideredClaimed(this));
     }
 
     getGloryCount() {
@@ -1472,7 +1471,7 @@ class Player extends GameObject {
             return;
         }
 
-        let handlers = _.map(['military', 'political'], (type) => {
+        let handlers = ['military', 'political'].map((type) => {
             return () => {
                 this.imperialFavor = type;
                 this.game.addMessage("{0} claims the Emperor's {1} favor!", this, type);
@@ -1761,9 +1760,11 @@ class Player extends GameObject {
         }
         optional = optional && elements.length === 1;
         let effects = elements.map((element) => RingEffects.contextFor(this, element, optional));
-        effects = _.sortBy(effects, (context) =>
-            this.firstPlayer ? context.ability.defaultPriority : -context.ability.defaultPriority
-        );
+        effects = [...effects].sort((a, b) => {
+            const aVal = this.firstPlayer ? a.ability.defaultPriority : -a.ability.defaultPriority;
+            const bVal = this.firstPlayer ? b.ability.defaultPriority : -b.ability.defaultPriority;
+            return aVal - bVal;
+        });
         this.game.openSimultaneousEffectWindow(
             effects.map((context) => ({
                 // @ts-ignore
@@ -1835,7 +1836,7 @@ class Player extends GameObject {
             stats: this.getStats(),
             timerSettings: this.timerSettings,
             strongholdProvince: this.getSummaryForCardList(this.strongholdProvince, activePlayer),
-            user: _.omit(this.user, ['password', 'email'])
+            user: (() => { const { password, email, ...userSummary } = this.user; return userSummary; })()
         };
 
         if (this.additionalPiles && Object.keys(this.additionalPiles)) {
@@ -1876,7 +1877,7 @@ class Player extends GameObject {
             state.clock = this.clock.getState();
         }
 
-        return _.extend(state, promptState);
+        return Object.assign(state, promptState);
     }
 }
 

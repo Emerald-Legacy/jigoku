@@ -1,4 +1,3 @@
-const _ = require('underscore');
 const { EffectValue } = require('./EffectValue');
 const { CardTypes, EffectNames, Durations, AbilityTypes } = require('../Constants');
 const GainAbility = require('./GainAbility');
@@ -70,11 +69,11 @@ const conflictingEffects = {
     setBasePoliticalSkill: (card) => card.effects.filter((effect) => effect.type === EffectNames.SetPoliticalSkill),
     setMaxConflicts: (player, value) =>
         player.mostRecentEffect(EffectNames.SetMaxConflicts) === value
-            ? [_.last(player.effects.filter((effect) => effect.type === EffectNames.SetMaxConflicts))]
+            ? [player.effects.filter((effect) => effect.type === EffectNames.SetMaxConflicts).at(-1)]
             : [],
     takeControl: (card, player) =>
         card.mostRecentEffect(EffectNames.TakeControl) === player
-            ? [_.last(card.effects.filter((effect) => effect.type === EffectNames.TakeControl))]
+            ? [card.effects.filter((effect) => effect.type === EffectNames.TakeControl).at(-1)]
             : []
 };
 

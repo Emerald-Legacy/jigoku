@@ -6,15 +6,11 @@ const crypto = require('crypto');
 const util = require('../util.js');
 const nodemailer = require('nodemailer');
 const moment = require('moment');
-const monk = require('monk').default;
+const db = require('../db.js');
 const UserService = require('../services/UserService.js');
 const Settings = require('../settings.js');
-const _ = require('underscore');
 const { wrapAsync } = require('../util.js');
 const env = require('../env.js');
-
-let db = monk(env.dbPath);
-let userService = new UserService(db);
 
 function hashPassword(password, rounds) {
     return new Promise((resolve, reject) => {
@@ -63,6 +59,29 @@ function sendEmail(address, email) {
 }
 
 module.exports.init = function (server) {
+    const userService = new UserService(db.getDb());
+
+    async function checkAuth(req, res) {
+        let user = await userService.getUserByUsername(req.params.username);
+
+        if (!req.user) {
+            res.status(401).send({ message: 'Unauthorized' });
+            return null;
+        }
+
+        if (req.user.username !== req.params.username) {
+            res.status(403).send({ message: 'Unauthorized' });
+            return null;
+        }
+
+        if (!user) {
+            res.status(404).send({ message: 'Not found' });
+            return null;
+        }
+
+        return user;
+    }
+
     server.post('/api/account/register', function (req, res) {
         if (!req.body.password) {
             res.send({ success: false, message: 'No password specified' });
@@ -154,9 +173,13 @@ module.exports.init = function (server) {
     });
 
     server.post('/api/account/logout', function (req, res) {
-        req.logout();
-
-        res.send({ success: true });
+        req.logout(function(err) {
+            if (err) {
+                logger.error('Logout error:', err);
+                return res.send({ success: false, message: 'Error during logout' });
+            }
+            res.send({ success: true });
+        });
     });
 
     server.post('/api/account/login', passport.authenticate('local'), function (req, res) {
@@ -394,11 +417,7 @@ module.exports.init = function (server) {
                 user.blockList = [];
             }
 
-            if (
-                _.find(user.blockList, (user) => {
-                    return user === req.body.username.toLowerCase();
-                })
-            ) {
+            if (user.blockList.find(u => u === req.body.username.toLowerCase())) {
                 return res.send({ success: false, message: 'Entry already on block list' });
             }
 
@@ -431,17 +450,11 @@ module.exports.init = function (server) {
                 user.blockList = [];
             }
 
-            if (
-                !_.find(user.blockList, (user) => {
-                    return user === req.params.entry.toLowerCase();
-                })
-            ) {
+            if (!user.blockList.find(u => u === req.params.entry.toLowerCase())) {
                 return res.status(404).send({ message: 'Not found' });
             }
 
-            user.blockList = _.reject(user.blockList, (user) => {
-                return user === req.params.entry.toLowerCase();
-            });
+            user.blockList = user.blockList.filter(u => u !== req.params.entry.toLowerCase());
 
             await userService.updateBlockList(user);
 
@@ -453,27 +466,3 @@ module.exports.init = function (server) {
         })
     );
 };
-
-async function checkAuth(req, res) {
-    let user = await userService.getUserByUsername(req.params.username);
-
-    if (!req.user) {
-        res.status(401).send({ message: 'Unauthorized' });
-
-        return null;
-    }
-
-    if (req.user.username !== req.params.username) {
-        res.status(403).send({ message: 'Unauthorized' });
-
-        return null;
-    }
-
-    if (!user) {
-        res.status(404).send({ message: 'Not found' });
-
-        return null;
-    }
-
-    return user;
-}

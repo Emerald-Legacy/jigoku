@@ -3,7 +3,7 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo').default;
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
 const { logger } = require('./logger');
@@ -15,8 +15,7 @@ const http = require('http');
 const helmet = require('helmet');
 const cors = require('cors');
 const { rateLimit } = require('express-rate-limit');
-const monk = require('monk').default;
-const _ = require('underscore');
+const db = require('./db.js');
 
 const UserService = require('./services/UserService.js');
 const Settings = require('./settings.js');
@@ -42,11 +41,14 @@ const authLimiter = rateLimit({
 
 class Server {
     constructor(isDeveloping) {
-        let db = monk(env.dbPath);
-        this.userService = new UserService(db);
         this.isDeveloping = isDeveloping;
+        this.userService = null;
         // @ts-ignore
         this.server = http.Server(app);
+    }
+
+    initDb() {
+        this.userService = new UserService(db.getDb());
     }
 
     init() {
@@ -93,7 +95,7 @@ class Server {
         app.set('trust proxy', 1);
         app.use(
             session({
-                store: new MongoStore({ mongoUrl: env.dbPath }),
+                store: MongoStore.create({ mongoUrl: env.dbPath }),
                 saveUninitialized: false,
                 resave: false,
                 secret: env.secret,
@@ -139,12 +141,14 @@ class Server {
             });
         });
 
-        app.get('*', (req, res) => {
+        app.get('{*splat}', (req, res) => {
             let token = undefined;
 
             if (req.user) {
                 token = jwt.sign(req.user, env.secret);
-                req.user = _.omit(req.user, 'blockList');
+                // Remove blockList from user object for rendering
+                const { blockList, ...userWithoutBlockList } = req.user;
+                req.user = userWithoutBlockList;
             }
 
             res.render('index', {

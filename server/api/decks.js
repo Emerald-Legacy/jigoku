@@ -1,12 +1,10 @@
-const monk = require('monk').default;
-const env = require('../env.js');
+const db = require('../db.js');
 const DeckService = require('../services/DeckService.js');
 const { wrapAsync } = require('../util.js');
 
-let db = monk(env.dbPath);
-let deckService = new DeckService(db);
-
 module.exports.init = function (server) {
+    const deckService = new DeckService(db.getDb());
+
     server.get(
         '/api/decks/:id',
         wrapAsync(async function (req, res) {
@@ -63,7 +61,7 @@ module.exports.init = function (server) {
 
             let data = Object.assign({ id: req.params.id }, JSON.parse(req.body.data));
 
-            deckService.update(data);
+            await deckService.update(data);
 
             res.send({ success: true, message: 'Saved' });
         })

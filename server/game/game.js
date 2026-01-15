@@ -1,4 +1,3 @@
-const _ = require('underscore');
 const EventEmitter = require('events');
 
 const ChatCommands = require('./chatcommands.js');
@@ -80,7 +79,7 @@ class Game extends EventEmitter {
         };
         this.shortCardData = options.shortCardData || [];
 
-        _.each(details.players, (player) => {
+        details.players.forEach((player) => {
             this.playersAndSpectators[player.user.username] = new Player(
                 player.id,
                 player.user,
@@ -90,7 +89,7 @@ class Game extends EventEmitter {
             );
         });
 
-        _.each(details.spectators, (spectator) => {
+        details.spectators.forEach((spectator) => {
             this.playersAndSpectators[spectator.user.username] = new Spectator(spectator.id, spectator.user);
         });
 
@@ -222,8 +221,7 @@ class Game extends EventEmitter {
      * @returns DrawCard
      */
     findAnyCardInPlayByUuid(cardId) {
-        return _.reduce(
-            this.getPlayers(),
+        return this.getPlayers().reduce(
             (card, player) => {
                 if (card) {
                     return card;
@@ -261,7 +259,7 @@ class Game extends EventEmitter {
     findAnyCardsInPlay(predicate) {
         var foundCards = [];
 
-        _.each(this.getPlayers(), (player) => {
+        this.getPlayers().forEach((player) => {
             foundCards = foundCards.concat(player.findCards(player.cardsInPlay, predicate));
         });
 
@@ -348,15 +346,15 @@ class Game extends EventEmitter {
     }
 
     stopNonChessClocks() {
-        _.each(this.getPlayers(), (player) => player.stopNonChessClocks());
+        this.getPlayers().forEach((player) => player.stopNonChessClocks());
     }
 
     stopClocks() {
-        _.each(this.getPlayers(), (player) => player.stopClock());
+        this.getPlayers().forEach((player) => player.stopClock());
     }
 
     resetClocks() {
-        _.each(this.getPlayers(), (player) => player.resetClock());
+        this.getPlayers().forEach((player) => player.resetClock());
     }
 
     /**
@@ -624,7 +622,7 @@ class Game extends EventEmitter {
                 return;
             }
 
-            let card = _.find(this.shortCardData, (c) => {
+            let card = this.shortCardData.find((c) => {
                 return c.name.toLowerCase() === message.toLowerCase() || c.id.toLowerCase() === message.toLowerCase();
             });
 
@@ -814,7 +812,7 @@ class Game extends EventEmitter {
     initialise() {
         var players = {};
 
-        _.each(this.playersAndSpectators, (player) => {
+        Object.values(this.playersAndSpectators).forEach((player) => {
             if (!player.left) {
                 players[player.name] = player;
             }
@@ -831,14 +829,11 @@ class Game extends EventEmitter {
             }
         }
 
-        this.allCards = _(
-            _.reduce(
-                this.getPlayers(),
-                (cards, player) => {
-                    return cards.concat(player.preparedDeck.allCards);
-                },
-                []
-            )
+        this.allCards = this.getPlayers().reduce(
+            (cards, player) => {
+                return cards.concat(player.preparedDeck.allCards);
+            },
+            []
         );
         this.provinceCards = this.allCards.filter((card) => card.isProvince);
 
@@ -946,7 +941,7 @@ class Game extends EventEmitter {
 
     openSimultaneousEffectWindow(choices) {
         let window = new SimultaneousEffectWindow(this);
-        _.each(choices, (choice) => window.addChoice(choice));
+        choices.forEach((choice) => window.addChoice(choice));
         this.queueStep(window);
     }
 
@@ -980,7 +975,7 @@ class Game extends EventEmitter {
      * @returns {EventWindow}
      */
     openEventWindow(events) {
-        if (!_.isArray(events)) {
+        if (!Array.isArray(events)) {
             events = [events];
         }
         return this.queueStep(new EventWindow(this, events));
@@ -988,7 +983,7 @@ class Game extends EventEmitter {
 
     openThenEventWindow(events) {
         if (this.currentEventWindow) {
-            if (!_.isArray(events)) {
+            if (!Array.isArray(events)) {
                 events = [events];
             }
             return this.queueStep(new ThenEventWindow(this, events));
@@ -1013,7 +1008,7 @@ class Game extends EventEmitter {
      * @param {Array} eventProps
      */
     raiseMultipleInitiateAbilityEvents(eventProps) {
-        let events = _.map(eventProps, (event) => new InitiateCardAbilityEvent(event.params, event.handler));
+        let events = eventProps.map((event) => new InitiateCardAbilityEvent(event.params, event.handler));
         this.queueStep(new InitiateAbilityEventWindow(this, events));
     }
 
@@ -1128,7 +1123,7 @@ class Game extends EventEmitter {
     }
 
     isEmpty() {
-        return _.all(this.playersAndSpectators, (player) => player.disconnected || player.left || player.id === 'TBA');
+        return Object.values(this.playersAndSpectators).every((player) => player.disconnected || player.left || player.id === 'TBA');
     }
 
     leave(playerName) {
@@ -1220,7 +1215,7 @@ class Game extends EventEmitter {
                     // any attachments which are illegally attached
                     card.checkForIllegalAttachments();
                 });
-                _.each(player.getProvinces(), (card) => {
+                player.getProvinces().forEach((card) => {
                     card && card.checkForIllegalAttachments();
                 });
 
@@ -1341,7 +1336,7 @@ class Game extends EventEmitter {
                 playerState[player.name] = player.getState(activePlayer);
             }
 
-            _.each(this.rings, (ring) => {
+            Object.values(this.rings).forEach((ring) => {
                 ringState[ring.element] = ring.getState(activePlayer);
             });
 
@@ -1349,11 +1344,12 @@ class Game extends EventEmitter {
                 conflictState = this.currentConflict.getSummary();
             }
 
+            const { blocklist, email, emailHash, promptedActionWindows, settings, ...ownerSummary } = this.owner;
             return {
                 id: this.id,
                 manualMode: this.manualMode,
                 name: this.name,
-                owner: _.omit(this.owner, ['blocklist', 'email', 'emailHash', 'promptedActionWindows', 'settings']),
+                owner: ownerSummary,
                 players: playerState,
                 rings: ringState,
                 conflict: conflictState,
@@ -1406,6 +1402,7 @@ class Game extends EventEmitter {
             };
         }
 
+        const { blocklist, email, emailHash, promptedActionWindows, settings, ...ownerSummary } = this.owner;
         return {
             allowSpectators: this.allowSpectators,
             createdAt: this.createdAt,
@@ -1414,7 +1411,7 @@ class Game extends EventEmitter {
             manualMode: this.manualMode,
             messages: this.gameChat.messages,
             name: this.name,
-            owner: _.omit(this.owner, ['blocklist', 'email', 'emailHash', 'promptedActionWindows', 'settings']),
+            owner: ownerSummary,
             players: playerSummaries,
             started: this.started,
             startedAt: this.startedAt,

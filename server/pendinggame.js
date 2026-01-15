@@ -1,5 +1,4 @@
 const uuid = require('uuid');
-const _ = require('underscore');
 const bcrypt = require('bcrypt');
 
 const { logger } = require('./logger');
@@ -40,7 +39,7 @@ class PendingGame {
     }
 
     getSaveState() {
-        var players = _.map(this.getPlayers(), (player) => {
+        var players = Object.values(this.getPlayers()).map((player) => {
             return {
                 faction: player.faction.name,
                 name: player.name
@@ -111,11 +110,11 @@ class PendingGame {
     }
 
     isUserBlocked(user) {
-        return _.contains(this.owner.blockList, user.username.toLowerCase());
+        return this.owner.blockList.includes(user.username.toLowerCase());
     }
 
     join(id, user, password, callback) {
-        if (_.size(this.players) === 2 || this.started) {
+        if (Object.keys(this.players).length === 2 || this.started) {
             return;
         }
 
@@ -248,7 +247,7 @@ class PendingGame {
 
     // interrogators
     isEmpty() {
-        return !_.any(this.getPlayersAndSpectators(), (player) => this.hasActivePlayer(player.name));
+        return !Object.values(this.getPlayersAndSpectators()).some((player) => this.hasActivePlayer(player.name));
     }
 
     isOwner(playerName) {
@@ -271,9 +270,9 @@ class PendingGame {
     // Summary
     getSummary(activePlayer) {
         var playerSummaries = {};
-        var playersInGame = _.filter(this.players, (player) => !player.left);
+        var playersInGame = Object.values(this.players).filter((player) => !player.left);
 
-        _.each(playersInGame, (player) => {
+        playersInGame.forEach((player) => {
             var deck = undefined;
 
             if (activePlayer === player.name && player.deck) {
@@ -311,7 +310,7 @@ class PendingGame {
             players: playerSummaries,
             spectatorSquelch: this.spectatorSquelch,
             started: this.started,
-            spectators: _.map(this.spectators, (spectator) => {
+            spectators: Object.values(this.spectators).map((spectator) => {
                 return {
                     id: spectator.id,
                     name: spectator.name,

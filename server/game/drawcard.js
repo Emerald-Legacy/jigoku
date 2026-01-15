@@ -1,5 +1,3 @@
-const _ = require('underscore');
-
 const BaseCard = require('./basecard');
 const DuplicateUniqueAction = require('./duplicateuniqueaction.js');
 const CourtesyAbility = require('./KeywordAbilities/CourtesyAbility');
@@ -36,7 +34,7 @@ class DrawCard extends BaseCard {
         this.printedPoliticalSkill = this.getPrintedSkill('political');
         this.printedCost = parseInt(this.cardData.cost);
 
-        if (!_.isNumber(this.printedCost) || isNaN(this.printedCost)) {
+        if (typeof this.printedCost !== 'number' || isNaN(this.printedCost)) {
             if (this.type === CardTypes.Event) {
                 this.printedCost = 0;
             } else {
@@ -172,7 +170,7 @@ class DrawCard extends BaseCard {
     anotherUniqueInPlay(player) {
         return (
             this.isUnique() &&
-            this.game.allCards.any(
+            this.game.allCards.some(
                 (card) =>
                     card.isInPlay() &&
                     card.printedName === this.printedName &&
@@ -185,7 +183,7 @@ class DrawCard extends BaseCard {
     anotherUniqueInPlayControlledBy(player) {
         return (
             this.isUnique() &&
-            this.game.allCards.any(
+            this.game.allCards.some(
                 (card) =>
                     card.isInPlay() &&
                     card.printedName === this.printedName &&
@@ -198,9 +196,9 @@ class DrawCard extends BaseCard {
     createSnapshot() {
         let clone = new DrawCard(this.owner, this.cardData);
 
-        clone.attachments = _(this.attachments.map((attachment) => attachment.createSnapshot()));
+        clone.attachments = this.attachments.map((attachment) => attachment.createSnapshot());
         clone.childCards = this.childCards.map((card) => card.createSnapshot());
-        clone.effects = _.clone(this.effects);
+        clone.effects = [...this.effects];
         clone.controller = this.controller;
         clone.bowed = this.bowed;
         clone.statusTokens = [...this.statusTokens];
@@ -407,13 +405,13 @@ class DrawCard extends BaseCard {
 
         let overridingMilModifiers = baseMilitaryModifiers.filter((mod) => mod.overrides);
         if (overridingMilModifiers.length > 0) {
-            let lastModifier = _.last(overridingMilModifiers);
+            let lastModifier = overridingMilModifiers.at(-1);
             baseMilitaryModifiers = [lastModifier];
             baseMilitarySkill = lastModifier.amount;
         }
         let overridingPolModifiers = basePoliticalModifiers.filter((mod) => mod.overrides);
         if (overridingPolModifiers.length > 0) {
-            let lastModifier = _.last(overridingPolModifiers);
+            let lastModifier = overridingPolModifiers.at(-1);
             basePoliticalModifiers = [lastModifier];
             basePoliticalSkill = lastModifier.amount;
         }
@@ -473,7 +471,7 @@ class DrawCard extends BaseCard {
             (effect) => effect.type === EffectNames.SetMilitarySkill || effect.type === EffectNames.SetDash
         );
         if (setEffects.length > 0) {
-            let latestSetEffect = _.last(setEffects);
+            let latestSetEffect = setEffects.at(-1);
             let setAmount = latestSetEffect.type === EffectNames.SetDash ? undefined : latestSetEffect.getValue(this);
             return [
                 StatModifier.fromEffect(
@@ -536,7 +534,7 @@ class DrawCard extends BaseCard {
         // set effects
         let setEffects = rawEffects.filter((effect) => effect.type === EffectNames.SetPoliticalSkill);
         if (setEffects.length > 0) {
-            let latestSetEffect = _.last(setEffects);
+            let latestSetEffect = setEffects.at(-1);
             let setAmount = latestSetEffect.getValue(this);
             return [
                 StatModifier.fromEffect(
@@ -685,7 +683,7 @@ class DrawCard extends BaseCard {
         // set effects
         let setEffects = gloryEffects.filter((effect) => effect.type === EffectNames.SetGlory);
         if (setEffects.length > 0) {
-            let latestSetEffect = _.last(setEffects);
+            let latestSetEffect = setEffects.at(-1);
             let setAmount = latestSetEffect.getValue(this);
             return [
                 StatModifier.fromEffect(
@@ -701,7 +699,7 @@ class DrawCard extends BaseCard {
         let baseEffects = gloryEffects.filter((effect) => effect.type === EffectNames.SetBaseGlory);
         let copyEffects = gloryEffects.filter((effect) => effect.type === EffectNames.CopyCharacter);
         if (baseEffects.length > 0) {
-            let latestBaseEffect = _.last(baseEffects);
+            let latestBaseEffect = baseEffects.at(-1);
             let baseAmount = latestBaseEffect.getValue(this);
             gloryModifiers.push(
                 StatModifier.fromEffect(
@@ -712,7 +710,7 @@ class DrawCard extends BaseCard {
                 )
             );
         } else if (copyEffects.length > 0) {
-            let latestCopyEffect = _.last(copyEffects);
+            let latestCopyEffect = copyEffects.at(-1);
             let copiedCard = latestCopyEffect.getValue(this);
             gloryModifiers.push(
                 StatModifier.fromEffect(
@@ -760,7 +758,7 @@ class DrawCard extends BaseCard {
         // set effects
         let setEffects = strengthEffects.filter((effect) => effect.type === EffectNames.SetProvinceStrengthBonus);
         if (setEffects.length > 0) {
-            let latestSetEffect = _.last(setEffects);
+            let latestSetEffect = setEffects.at(-1);
             let setAmount = latestSetEffect.getValue(this);
             return [
                 StatModifier.fromEffect(
@@ -1132,7 +1130,7 @@ class DrawCard extends BaseCard {
     getSummary(activePlayer, hideWhenFaceup) {
         let baseSummary = super.getSummary(activePlayer, hideWhenFaceup);
 
-        return _.extend(baseSummary, {
+        return Object.assign(baseSummary, {
             attached: !!this.parent,
             attachments: this.attachments.map((attachment) => {
                 return attachment.getSummary(activePlayer, hideWhenFaceup);

@@ -1,5 +1,3 @@
-const _ = require('underscore');
-
 const AbilityLimit = require('./AbilityLimit');
 const GainAllAbiliitesDynamic = require('./Effects/GainAllAbilitiesDynamic.js');
 const Restriction = require('./Effects/restriction.js');
@@ -247,7 +245,7 @@ const Effects = {
             apply: (player) => (player.actionPhasePriority = true),
             unapply: (player) => (player.actionPhasePriority = false)
         }),
-    increaseCost: (properties) => Effects.reduceCost(_.extend(properties, { amount: -properties.amount })),
+    increaseCost: (properties) => Effects.reduceCost(Object.assign({}, properties, { amount: -properties.amount })),
     modifyCardsDrawnInDrawPhase: (amount) =>
         EffectBuilder.player.flexible(EffectNames.ModifyCardsDrawnInDrawPhase, amount),
     playerCannot: (properties) =>
