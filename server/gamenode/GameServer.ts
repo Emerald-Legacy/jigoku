@@ -61,15 +61,18 @@ export class GameServer {
 
         server.listen(env.gameNodeSocketIoPort);
 
+        // Configure CORS - use specified origins if provided, otherwise allow all origins
+        // Socket.io v4 requires explicit CORS configuration for cross-origin requests
+        const corsConfig = env.gameNodeOrigin
+            ? { origin: env.gameNodeOrigin.split(','), credentials: true }
+            : { origin: true, credentials: true };
+
         this.io = new socketio.Server(server, {
             perMessageDeflate: false,
             path: `/${env.gameNodeName}/socket.io`,
             pingTimeout: 30000,
             pingInterval: 25000,
-            cors: env.gameNodeOrigin ? {
-                origin: env.gameNodeOrigin.split(','),
-                credentials: true
-            } : undefined
+            cors: corsConfig
         });
         this.io.use(this.handshake.bind(this));
         this.io.on('connection', this.onConnection.bind(this));
