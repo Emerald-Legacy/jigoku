@@ -68,6 +68,10 @@ export class CostReducer {
         return !!this.limit && this.limit.isAtMax(this.source.controller) && !this.limit.isRepeatable();
     }
 
+    public getCostFloor(): number {
+        return this.costFloor;
+    }
+
     public unregisterEvents(): void {
         this.limit?.unregisterEvents(this.game);
     }

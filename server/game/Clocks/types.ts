@@ -14,4 +14,7 @@ export interface ClockInterface {
     reset(): void;
     start(): void;
     stop(): void;
+    manuallyPause(): void;
+    manuallyResume(): void;
+    modify(secs: number): void;
 }
