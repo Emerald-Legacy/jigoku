@@ -1,10 +1,10 @@
 const socketio = require('socket.io');
 const Socket = require('./socket.js');
 const jwt = require('jsonwebtoken');
-const moment = require('moment');
+const { differenceInSeconds } = require('date-fns');
 
 const { logger } = require('./logger');
-const version = moment(require('../version.js'));
+const version = new Date(require('../version.js'));
 const PendingGame = require('./pendinggame.js');
 const GameRouter = require('./gamerouter.js');
 const MessageService = require('./services/MessageService.js');
@@ -42,7 +42,7 @@ class Lobby {
         this.io.use(this.handshake.bind(this));
         this.io.on('connection', this.onConnection.bind(this));
 
-        this.lastUserBroadcast = moment();
+        this.lastUserBroadcast = new Date();
 
         this.loadCardData();
 
@@ -156,7 +156,7 @@ class Lobby {
 
         const clientVersion = socket.handshake.auth?.version || socket.handshake.query?.version;
         if(clientVersion) {
-            versionInfo = moment(clientVersion);
+            versionInfo = new Date(clientVersion);
         }
 
         if(!versionInfo || versionInfo < version) {
@@ -215,13 +215,13 @@ class Lobby {
     }
 
     broadcastUserList() {
-        var now = moment();
+        var now = new Date();
 
-        if(now.diff(this.lastUserBroadcast) / 1000 < 60) {
+        if(differenceInSeconds(now, this.lastUserBroadcast) < 60) {
             return;
         }
 
-        this.lastUserBroadcast = moment();
+        this.lastUserBroadcast = new Date();
 
         let users = this.getUserList();
 
