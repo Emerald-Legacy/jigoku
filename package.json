@@ -6,7 +6,9 @@
     "scripts": {
         "test": "npm run jasmine",
         "jasmine": "tsc && cross-env JASMINE_CONFIG_PATH=./jasmine.json jasmine",
-        "lint": "eslint server/ test/server/ --ext=js"
+        "lint": "eslint server/ test/server/ --ext=js",
+        "typecheck": "tsc --noEmit",
+        "typecheck:strict": "tsc --noEmit -p tsconfig.strict.json"
     },
     "repository": {
         "type": "git",

@@ -46,7 +46,7 @@ export class AbilityContext<S = any> {
     elementCard: BaseCard;
     provincesToRefill: any[] = [];
     subResolution = false;
-    choosingPlayerOverride: Player = null;
+    choosingPlayerOverride: Player | null = null;
     gameActionsResolutionChain: GameAction[] = [];
     playType: PlayTypes;
     cardStateWhenInitiated: any = null;

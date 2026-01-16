@@ -62,15 +62,15 @@ const ValidKeywords = new Set(printedKeywords);
 
 class BaseCard extends EffectSource {
     controller: Player;
-    game: Game;
+    declare game: Game;
 
-    id: string;
+    declare id: string;
     printedName: string;
     inConflict = false;
-    type: CardTypes;
-    facedown: boolean;
+    declare type: CardTypes;
+    facedown: boolean = false;
 
-    tokens: object = {};
+    tokens: Record<string, number> = {};
     menu: { command: string; text: string }[] = [];
 
     showPopup: boolean = false;
@@ -78,7 +78,7 @@ class BaseCard extends EffectSource {
     abilities: any = { actions: [], reactions: [], persistentEffects: [], playActions: [] };
     traits: string[];
     printedFaction: string;
-    location: Locations;
+    location!: Locations;
 
     isProvince: boolean = false;
     isConflict: boolean = false;
@@ -132,7 +132,7 @@ class BaseCard extends EffectSource {
             actions = mostRecentEffect.value.getActions(this);
         }
         const effectActions = this.getEffects(EffectNames.GainAbility).filter(
-            (ability) => ability.abilityType === AbilityTypes.Action
+            (ability: any) => ability.abilityType === AbilityTypes.Action
         );
 
         for(const effect of this.getRawEffects()) {
@@ -142,11 +142,11 @@ class BaseCard extends EffectSource {
         }
         if(!ignoreDynamicGains) {
             if(this.anyEffect(EffectNames.GainAllAbilitiesDynamic)) {
-                const context = this.game.getFrameworkContext(this.controller);
+                const context = (this.game.getFrameworkContext as (player?: Player | null) => AbilityContext)(this.controller);
                 const effects = this.getRawEffects().filter(
-                    (effect) => effect.type === EffectNames.GainAllAbilitiesDynamic
+                    (effect: CardEffect) => effect.type === EffectNames.GainAllAbilitiesDynamic
                 );
-                effects.forEach((effect) => {
+                effects.forEach((effect: CardEffect) => {
                     effect.value.calculate(this, context); //fetch new abilities
                     actions = actions.concat(effect.value.getActions(this));
                 });
@@ -156,7 +156,7 @@ class BaseCard extends EffectSource {
         const lostAllNonKeywordsAbilities = this.anyEffect(EffectNames.LoseAllNonKeywordAbilities);
         let allAbilities = actions.concat(effectActions);
         if(lostAllNonKeywordsAbilities) {
-            allAbilities = allAbilities.filter((a) => a.isKeywordAbility());
+            allAbilities = allAbilities.filter((a: any) => a.isKeywordAbility());
         }
         return allAbilities;
     }
@@ -178,7 +178,7 @@ class BaseCard extends EffectSource {
         if(mostRecentEffect) {
             reactions = mostRecentEffect.value.getReactions(this);
         }
-        const effectReactions = this.getEffects(EffectNames.GainAbility).filter((ability) =>
+        const effectReactions = this.getEffects(EffectNames.GainAbility).filter((ability: any) =>
             TriggeredAbilityTypes.includes(ability.abilityType)
         );
         for(const effect of this.getRawEffects()) {
@@ -189,10 +189,10 @@ class BaseCard extends EffectSource {
         if(!ignoreDynamicGains) {
             if(this.anyEffect(EffectNames.GainAllAbilitiesDynamic)) {
                 const effects = this.getRawEffects().filter(
-                    (effect) => effect.type === EffectNames.GainAllAbilitiesDynamic
+                    (effect: CardEffect) => effect.type === EffectNames.GainAllAbilitiesDynamic
                 );
-                const context = this.game.getFrameworkContext(this.controller);
-                effects.forEach((effect) => {
+                const context = (this.game.getFrameworkContext as (player?: Player | null) => AbilityContext)(this.controller);
+                effects.forEach((effect: CardEffect) => {
                     effect.value.calculate(this, context); //fetch new abilities
                     reactions = reactions.concat(effect.value.getReactions(this));
                 });
@@ -202,7 +202,7 @@ class BaseCard extends EffectSource {
         const lostAllNonKeywordsAbilities = this.anyEffect(EffectNames.LoseAllNonKeywordAbilities);
         let allAbilities = reactions.concat(effectReactions);
         if(lostAllNonKeywordsAbilities) {
-            allAbilities = allAbilities.filter((a) => a.isKeywordAbility());
+            allAbilities = allAbilities.filter((a: any) => a.isKeywordAbility());
         }
         return allAbilities;
     }
@@ -213,7 +213,7 @@ class BaseCard extends EffectSource {
 
     _getPersistentEffects(ignoreDynamicGains = false): any[] {
         let gainedPersistentEffects = this.getEffects(EffectNames.GainAbility).filter(
-            (ability) => ability.abilityType === AbilityTypes.Persistent
+            (ability: any) => ability.abilityType === AbilityTypes.Persistent
         );
 
         const mostRecentEffect = this.#mostRecentEffect((effect) => effect.type === EffectNames.CopyCharacter);
@@ -233,10 +233,10 @@ class BaseCard extends EffectSource {
             // As the game state is applying the effect
             if(this.anyEffect(EffectNames.GainAllAbilitiesDynamic)) {
                 const effects = this.getRawEffects().filter(
-                    (effect) => effect.type === EffectNames.GainAllAbilitiesDynamic
+                    (effect: CardEffect) => effect.type === EffectNames.GainAllAbilitiesDynamic
                 );
-                const context = this.game.getFrameworkContext(this.controller);
-                effects.forEach((effect) => {
+                const context = (this.game.getFrameworkContext as (player?: Player | null) => AbilityContext)(this.controller);
+                effects.forEach((effect: CardEffect) => {
                     effect.value.calculate(this, context); //fetch new abilities
                     gainedPersistentEffects = gainedPersistentEffects.concat(effect.value.getPersistentEffects());
                 });
@@ -246,7 +246,7 @@ class BaseCard extends EffectSource {
         const lostAllNonKeywordsAbilities = this.anyEffect(EffectNames.LoseAllNonKeywordAbilities);
         if(lostAllNonKeywordsAbilities) {
             let allAbilities = this.abilities.persistentEffects.concat(gainedPersistentEffects);
-            allAbilities = allAbilities.filter((a) => a.isKeywordEffect || a.type === EffectNames.AddKeyword);
+            allAbilities = allAbilities.filter((a: any) => a.isKeywordEffect || a.type === EffectNames.AddKeyword);
             return allAbilities;
         }
         return this.isBlank()
@@ -262,7 +262,7 @@ class BaseCard extends EffectSource {
      * Create card abilities by calling subsequent methods with appropriate properties
      * @param {Object} ability - AbilityDsl object containing limits, costs, effects, and game actions
      */
-    setupCardAbilities(ability) {
+    setupCardAbilities(ability: any): void {
 
     }
 
@@ -311,7 +311,8 @@ class BaseCard extends EffectSource {
             ...properties,
             when: {
                 onDuelChallenge: ({ duel }: { duel?: Duel }, context) =>
-                    duel &&
+                    !!context &&
+                    !!duel &&
                     duel.playerCanTriggerChallenge(context.player) &&
                     (!properties.duelCondition || properties.duelCondition(duel, context))
             }
@@ -320,13 +321,14 @@ class BaseCard extends EffectSource {
     }
 
     duelFocus(
-        properties: Omit<TriggeredAbilityWhenProps, 'when'> & { duelCondition?: (duel, context) => boolean }
+        properties: Omit<TriggeredAbilityWhenProps, 'when'> & { duelCondition?: (duel: Duel, context: AbilityContext) => boolean }
     ): void {
         const newProperties: TriggeredAbilityWhenProps = {
             ...properties,
             when: {
                 onDuelFocus: ({ duel }: { duel?: Duel }, context) =>
-                    duel &&
+                    !!context &&
+                    !!duel &&
                     duel.playerCanTriggerFocus(context.player) &&
                     (!properties.duelCondition || properties.duelCondition(duel, context))
             }
@@ -334,12 +336,13 @@ class BaseCard extends EffectSource {
         this.triggeredAbility(AbilityTypes.DuelReaction, newProperties);
     }
 
-    duelStrike(properties: Omit<TriggeredAbilityProps, 'when'> & { duelCondition?: (duel, context) => boolean }): void {
+    duelStrike(properties: Omit<TriggeredAbilityProps, 'when'> & { duelCondition?: (duel: Duel, context: AbilityContext) => boolean }): void {
         const newProperties: TriggeredAbilityProps = {
             ...properties,
             when: {
                 onDuelStrike: ({ duel }: { duel?: Duel }, context) =>
-                    duel &&
+                    !!context &&
+                    !!duel &&
                     duel.playerCanTriggerStrike(context.player) &&
                     (!properties.duelCondition || properties.duelCondition(duel, context))
             }
@@ -358,13 +361,14 @@ class BaseCard extends EffectSource {
             Locations.PlayArea,
             Locations.Provinces
         ];
-        const defaultLocationForType = {
+        const defaultLocationForType: Record<string, Locations> = {
             province: Locations.Provinces,
             holding: Locations.Provinces,
             stronghold: Locations.Provinces
         };
 
-        let location = properties.location || defaultLocationForType[this.getType()] || Locations.PlayArea;
+        const locationProp = properties.location || defaultLocationForType[this.getType()] || Locations.PlayArea;
+        const location = Array.isArray(locationProp) ? locationProp[0] : locationProp;
         if(!allowedLocations.includes(location)) {
             throw new Error(`'${location}' is not a supported effect location.`);
         }
@@ -411,25 +415,26 @@ class BaseCard extends EffectSource {
         }
     }
 
-    composure(properties): void {
-        this.persistentEffect(
-            Object.assign({ condition: (context) => context.player.hasComposure(), isKeywordEffect: true }, properties)
-        );
+    composure(properties: Omit<PersistentEffectProps<this>, 'condition'>): void {
+        this.persistentEffect({
+            condition: (context: AbilityContext) => context.player.hasComposure(),
+            ...properties
+        } as PersistentEffectProps<this> & { isKeywordEffect: boolean });
     }
 
-    dire(properties): void {
+    dire(properties: PersistentEffectProps<this>): void {
         if(properties && properties.condition) {
             let currentCondition = properties.condition;
-            properties.condition = (context) => context.source.isDire() && currentCondition(context);
+            properties.condition = (context: AbilityContext) => context.source.isDire() && currentCondition(context);
         } else {
-            properties = Object.assign({ condition: (context) => context.source.isDire() }, properties);
+            properties = Object.assign({ condition: (context: AbilityContext) => context.source.isDire() }, properties);
         }
         properties = Object.assign({ isKeywordEffect: true }, properties);
 
         this.persistentEffect(properties);
     }
 
-    legendary(fate): void {
+    legendary(fate: number): void {
         this.persistentEffect({
             location: Locations.Any,
             targetLocation: Locations.Any,
@@ -617,7 +622,7 @@ class BaseCard extends EffectSource {
     }
 
     updateEffects(from: Locations, to: Locations) {
-        const activeLocations = {
+        const activeLocations: Record<string, Locations[]> = {
             'conflict discard pile': [Locations.ConflictDiscardPile],
             'play area': [Locations.PlayArea],
             province: this.game.getProvinceArray()
@@ -633,12 +638,10 @@ class BaseCard extends EffectSource {
             if(effect.location === Locations.Any) {
                 continue;
             }
-            if(activeLocations[effect.location].includes(to) && !activeLocations[effect.location].includes(from)) {
+            const locationEntry = activeLocations[effect.location];
+            if(locationEntry && locationEntry.includes(to) && !locationEntry.includes(from)) {
                 effect.ref = this.addEffectToEngine(effect);
-            } else if(
-                !activeLocations[effect.location].includes(to) &&
-                activeLocations[effect.location].includes(from)
-            ) {
+            } else if(locationEntry && !locationEntry.includes(to) && locationEntry.includes(from)) {
                 this.removeEffectFromEngine(effect.ref);
                 effect.ref = [];
             }
@@ -687,7 +690,7 @@ class BaseCard extends EffectSource {
         }
     }
 
-    canTriggerAbilities(context: AbilityContext, ignoredRequirements = []): boolean {
+    canTriggerAbilities(context: AbilityContext, ignoredRequirements: string[] = []): boolean {
         return (
             this.isFaceup() &&
             (ignoredRequirements.includes('triggeringRestrictions') ||
@@ -700,10 +703,10 @@ class BaseCard extends EffectSource {
     }
 
     getModifiedLimitMax(player: Player, ability: CardAbility, max: number): number {
-        const effects = this.getRawEffects().filter((effect) => effect.type === EffectNames.IncreaseLimitOnAbilities);
+        const effects = this.getRawEffects().filter((effect: CardEffect) => effect.type === EffectNames.IncreaseLimitOnAbilities);
         let total = max;
-        effects.forEach((effect) => {
-            const value = effect.getValue(this);
+        effects.forEach((effect: CardEffect) => {
+            const value = effect.getValue(this as any);
             const applyingPlayer = value.applyingPlayer || effect.context.player;
             const targetAbility = value.targetAbility;
             if((!targetAbility || targetAbility === ability) && applyingPlayer === player) {
@@ -712,10 +715,10 @@ class BaseCard extends EffectSource {
         });
 
         const printedEffects = this.getRawEffects().filter(
-            (effect) => effect.type === EffectNames.IncreaseLimitOnPrintedAbilities
+            (effect: CardEffect) => effect.type === EffectNames.IncreaseLimitOnPrintedAbilities
         );
-        printedEffects.forEach((effect) => {
-            const value = effect.getValue(this);
+        printedEffects.forEach((effect: CardEffect) => {
+            const value = effect.getValue(this as any);
             if(ability.printedAbility && (value === true || value === ability) && effect.context.player === player) {
                 total++;
             }
@@ -757,20 +760,20 @@ class BaseCard extends EffectSource {
 
     isAttacking(conflictType?: 'military' | 'political'): boolean {
         return (
-            this.game.currentConflict?.isAttacking(this) && (!conflictType || this.game.isDuringConflict(conflictType))
+            this.game.currentConflict?.isAttacking(this) && (!conflictType || (this.game.isDuringConflict as (type: string | null) => boolean)(conflictType))
         );
     }
 
     isDefending(conflictType?: 'military' | 'political'): boolean {
         return (
-            this.game.currentConflict?.isDefending(this) && (!conflictType || this.game.isDuringConflict(conflictType))
+            this.game.currentConflict?.isDefending(this) && (!conflictType || (this.game.isDuringConflict as (type: string | null) => boolean)(conflictType))
         );
     }
 
     isParticipating(conflictType?: 'military' | 'political'): boolean {
         return (
             this.game.currentConflict?.isParticipating(this) &&
-            (!conflictType || this.game.isDuringConflict(conflictType))
+            (!conflictType || (this.game.isDuringConflict as (type: string | null) => boolean)(conflictType))
         );
     }
 
@@ -798,7 +801,7 @@ class BaseCard extends EffectSource {
         return this.cardData.clan || this.cardData.faction;
     }
 
-    checkRestrictions(actionType, context: AbilityContext): boolean {
+    checkRestrictions(actionType: string, context: AbilityContext): boolean {
         let player = (context && context.player) || this.controller;
         let conflict = context && context.game && context.game.currentConflict;
         return (
@@ -870,8 +873,8 @@ class BaseCard extends EffectSource {
         }
 
         for(const keyword of potentialKeywords) {
-            if(ValidKeywords.has(keyword)) {
-                this.printedKeywords.push(keyword);
+            if(ValidKeywords.has(keyword as PrintedKeyword)) {
+                this.printedKeywords.push(keyword as PrintedKeyword);
             } else if(keyword.startsWith('disguised ')) {
                 this.disguisedKeywordTraits.push(keyword.replace('disguised ', ''));
             } else if(keyword.startsWith('no attachments except')) {
@@ -918,7 +921,7 @@ class BaseCard extends EffectSource {
     }
 
     checkForIllegalAttachments() {
-        let context = this.game.getFrameworkContext(this.controller);
+        let context = (this.game.getFrameworkContext as (player?: Player | null) => AbilityContext)(this.controller);
         const illegalAttachments = new Set(
             this.attachments.filter((attachment) => !this.allowAttachment(attachment) || !attachment.canAttach(this))
         );
@@ -971,8 +974,8 @@ class BaseCard extends EffectSource {
             this.game.promptForSelect(this.controller, {
                 activePromptTitle: 'Choose an attachment to discard',
                 waitingPromptTitle: 'Waiting for opponent to choose an attachment to discard',
-                cardCondition: (card) => card.parent === this && card.isRestricted(),
-                onSelect: (player, card) => {
+                cardCondition: (card: DrawCard) => card.parent === this && card.isRestricted(),
+                onSelect: (player: Player, card: DrawCard) => {
                     this.game.addMessage(
                         '{0} discards {1} from {2} due to too many Restricted attachments',
                         player,
@@ -1016,10 +1019,10 @@ class BaseCard extends EffectSource {
     }
 
     /**
-     * Checks whether an attachment can be played on a given card.  Intended to be
+     * Checks whether an attachment can be played on a given card or ring.  Intended to be
      * used by cards inheriting this class
      */
-    canPlayOn(card) {
+    canPlayOn(card: BaseCard | Ring): boolean {
 
         return true;
     }
@@ -1028,7 +1031,7 @@ class BaseCard extends EffectSource {
      * Checks 'no attachment' restrictions for this card when attempting to
      * attach the passed attachment card.
      */
-    allowAttachment(attachment) {
+    allowAttachment(attachment: DrawCard): boolean {
         if(this.allowedAttachmentTraits.some((trait) => attachment.hasTrait(trait))) {
             return true;
         }
@@ -1142,16 +1145,16 @@ class BaseCard extends EffectSource {
      * game effects to respond to.
      * @param {DrawCard} attachment
      */
-    removeAttachment(attachment) {
+    removeAttachment(attachment: DrawCard) {
         this.attachments = this.attachments.filter((card) => card.uuid !== attachment.uuid);
     }
 
-    addChildCard(card, location) {
+    addChildCard(card: DrawCard, location: Locations) {
         this.childCards.push(card);
         this.controller.moveCard(card, location);
     }
 
-    removeChildCard(card, location) {
+    removeChildCard(card: DrawCard | null, location: Locations) {
         if(!card) {
             return;
         }
@@ -1160,15 +1163,15 @@ class BaseCard extends EffectSource {
         this.controller.moveCard(card, location);
     }
 
-    addStatusToken(tokenType) {
-        tokenType = tokenType.grantedStatus || tokenType;
-        if(!this.statusTokens.find((a) => a.grantedStatus === tokenType)) {
-            if(tokenType === CharacterStatus.Honored && this.isDishonored) {
+    addStatusToken(tokenType: CharacterStatus | StatusToken) {
+        const status = (tokenType as StatusToken).grantedStatus || (tokenType as CharacterStatus);
+        if(!this.statusTokens.find((a) => a.grantedStatus === status)) {
+            if(status === CharacterStatus.Honored && this.isDishonored) {
                 this.removeStatusToken(CharacterStatus.Dishonored);
-            } else if(tokenType === CharacterStatus.Dishonored && this.isHonored) {
+            } else if(status === CharacterStatus.Dishonored && this.isHonored) {
                 this.removeStatusToken(CharacterStatus.Honored);
             } else {
-                const token = StatusToken.create(this.game, this, tokenType);
+                const token = StatusToken.create(this.game, this, status);
                 if(token) {
                     token.setCard(this);
                     this.statusTokens.push(token);
@@ -1177,9 +1180,9 @@ class BaseCard extends EffectSource {
         }
     }
 
-    removeStatusToken(tokenType) {
-        tokenType = tokenType.grantedStatus || tokenType;
-        const index = this.statusTokens.findIndex((a) => a.grantedStatus === tokenType);
+    removeStatusToken(tokenType: CharacterStatus | StatusToken) {
+        const status = (tokenType as StatusToken).grantedStatus || (tokenType as CharacterStatus);
+        const index = this.statusTokens.findIndex((a) => a.grantedStatus === status);
         if(index > -1) {
             const realToken = this.statusTokens[index];
             realToken.setCard(null);
@@ -1187,7 +1190,7 @@ class BaseCard extends EffectSource {
         }
     }
 
-    getStatusToken(tokenType) {
+    getStatusToken(tokenType: CharacterStatus) {
         return this.statusTokens.find((a) => a.grantedStatus === tokenType);
     }
 
@@ -1212,7 +1215,7 @@ class BaseCard extends EffectSource {
         return !!this.statusTokens && this.statusTokens.length > 0;
     }
 
-    hasStatusToken(type) {
+    hasStatusToken(type: CharacterStatus) {
         return !!this.statusTokens && this.statusTokens.some((a) => a.grantedStatus === type);
     }
 
@@ -1265,33 +1268,35 @@ class BaseCard extends EffectSource {
         return !this.isHonored && !this.isDishonored;
     }
 
-    hasElementSymbols() {
+    hasElementSymbols(): boolean {
         return false;
     }
 
-    getPrintedElementSymbols() {
+    getPrintedElementSymbols(): Array<{ element: string; key: string; prettyName: string }> {
         return [];
     }
 
     getCurrentElementSymbols(): ElementSymbol[] {
-        if(!this.isInPlay()) {
-            return this.getPrintedElementSymbols();
-        }
         const symbols = this.getPrintedElementSymbols();
-        let changeEffects = this.getRawEffects().filter((effect) => effect.type === EffectNames.ReplacePrintedElement);
-        changeEffects.forEach((effect) => {
+        if(!this.isInPlay()) {
+            return symbols.map((symbol) => new ElementSymbol(this.game, this, symbol as any));
+        }
+        let changeEffects = this.getRawEffects().filter((effect: CardEffect) => effect.type === EffectNames.ReplacePrintedElement);
+        changeEffects.forEach((effect: CardEffect) => {
             const newElement = effect.value.value;
             let sym = symbols.find((a) => a.key === newElement.key);
-            sym.element = newElement.element;
+            if(sym) {
+                sym.element = newElement.element;
+            }
         });
-        const mapped = [];
+        const mapped: ElementSymbol[] = [];
         symbols.forEach((symbol) => {
-            mapped.push(new ElementSymbol(this.game, this, symbol));
+            mapped.push(new ElementSymbol(this.game, this, symbol as any));
         });
         return mapped;
     }
 
-    getCurrentElementSymbol(key) {
+    getCurrentElementSymbol(key: string) {
         const symbols = this.getCurrentElementSymbols();
         const symbol = symbols.find((a) => a.key === key);
         if(symbol) {
@@ -1307,7 +1312,7 @@ class BaseCard extends EffectSource {
         return super.getShortSummaryForControls(activePlayer);
     }
 
-    getSummary(activePlayer, hideWhenFaceup) {
+    getSummary(activePlayer: Player, hideWhenFaceup: boolean) {
         let isActivePlayer = activePlayer === this.controller;
         let selectionState = activePlayer.getCardSelectionState(this);
 

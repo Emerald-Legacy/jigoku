@@ -164,7 +164,7 @@ export function discardCard(properties?: SelectCostProperties): Cost {
     return getSelectCost(
         GameActions.discardCard(),
         Object.assign({ location: Locations.Hand, mode: TargetModes.Exactly }, properties),
-        (properties?.numCards ?? 0) > 1 ? `Select ${properties.numCards} cards to discard` : 'Select card to discard'
+        (properties?.numCards ?? 0) > 1 ? `Select ${properties!.numCards} cards to discard` : 'Select card to discard'
     );
 }
 
@@ -335,7 +335,7 @@ export function payPrintedFateCost(): Cost {
             return new Event(
                 EventNames.OnSpendFate,
                 { amount, context },
-                (event) => (event.context.player.fate -= event.amount)
+                (event: any) => (event.context.player.fate -= event.amount)
             );
         }
     };
@@ -413,7 +413,7 @@ export function variableHonorCost(amountFunc: (context: TriggeredAbilityContext)
                 activePromptTitle: 'Choose how much honor to pay',
                 context: context,
                 choices: choices,
-                choiceHandler: (choice) => {
+                choiceHandler: (choice: string) => {
                     if(choice === 'Cancel') {
                         context.costs.variableHonorCost = 0;
                         result.cancelled = true;
@@ -524,9 +524,9 @@ export function returnRings(amount = -1, ringCondition = (ring: Ring, context: T
             return ['returning the {1}', [context.costs.returnRing]];
         },
         resolve(context: TriggeredAbilityContext, result) {
-            const chosenRings = [];
+            const chosenRings: Ring[] = [];
             const promptPlayer = () => {
-                const buttons = [];
+                const buttons: Array<{ text: string; arg: string }> = [];
                 if(chosenRings.length > 0) {
                     buttons.push({ text: 'Done', arg: 'done' });
                 }
@@ -537,15 +537,15 @@ export function returnRings(amount = -1, ringCondition = (ring: Ring, context: T
                     activePromptTitle: 'Choose a ring to return',
                     context: context,
                     buttons: buttons,
-                    ringCondition: (ring) =>
+                    ringCondition: (ring: Ring) =>
                         ringCondition(ring, context) &&
                         ring.claimedBy === context.player.name &&
                         !chosenRings.includes(ring),
-                    onSelect: (player, ring) => {
+                    onSelect: (player: Player, ring: Ring) => {
                         chosenRings.push(ring);
                         if(
                             Object.values(context.game.rings).some(
-                                (ring) =>
+                                (ring: Ring) =>
                                     ring.claimedBy === context.player.name &&
                                     !chosenRings.includes(ring) &&
                                     (amount < 0 || chosenRings.length < amount)
@@ -557,11 +557,12 @@ export function returnRings(amount = -1, ringCondition = (ring: Ring, context: T
                         }
                         return true;
                     },
-                    onMenuCommand: (player, arg) => {
+                    onMenuCommand: (player: Player, arg: string): boolean | undefined => {
                         if(arg === 'done') {
                             context.costs.returnRing = chosenRings;
                             return true;
                         }
+                        return undefined;
                     },
                     onCancel: () => {
                         context.costs.returnRing = [];
@@ -689,7 +690,7 @@ export function discardCardsUpToVariableX(amountDerivable: Derivable<number, Tri
                 ordered: false,
                 location: Locations.Hand,
                 controller: Players.Self,
-                onSelect: (player, cards) => {
+                onSelect: (player: Player, cards: DrawCard[]) => {
                     if(cards.length === 0) {
                         context.costs.discardCardsUpToVariableX = [];
                         result.cancelled = true;
@@ -730,7 +731,7 @@ export function discardCardsExactlyVariableX(amountDerivable: Derivable<number, 
                 ordered: false,
                 location: Locations.Hand,
                 controller: Players.Self,
-                onSelect: (player, cards) => {
+                onSelect: (player: Player, cards: DrawCard[]) => {
                     if(cards.length === 0) {
                         context.costs.discardCardsExactlyVariableX = [];
                         result.cancelled = true;
@@ -770,13 +771,13 @@ export function discardHand(): Cost {
 
 export function optional(cost: Cost): Cost {
     const getActionName = (context: TriggeredAbilityContext) =>
-        `optional${cost.getActionName(context).replace(/^./, (c) => c.toUpperCase())}`;
+        `optional${cost.getActionName!(context).replace(/^./, (c) => c.toUpperCase())}`;
 
     return {
         promptsPlayer: true,
         canPay: () => true,
-        getCostMessage: (context: TriggeredAbilityContext) =>
-            context.costs[getActionName(context)] ? cost.getCostMessage(context) : undefined,
+        getCostMessage: (context: TriggeredAbilityContext): unknown[] =>
+            context.costs[getActionName(context)] ? cost.getCostMessage!(context) : [],
         getActionName: getActionName,
         resolve: (context: TriggeredAbilityContext, result) => {
             if(!cost.canPay(context)) {
@@ -814,8 +815,8 @@ export function optional(cost: Cost): Cost {
                 return doNothing.getEvent(context.player, context);
             }
 
-            const events = [];
-            cost.addEventsToArray(events, context, {});
+            const events: Event[] = [];
+            cost.addEventsToArray!(events, context, {});
             return events;
         }
     };
@@ -840,9 +841,9 @@ export function optionalFateCost(amount: number, forcePayment: (context: Trigger
         getActionName(context: TriggeredAbilityContext) {
             return 'optionalFateCost';
         },
-        getCostMessage: (context: TriggeredAbilityContext) => {
+        getCostMessage: (context: TriggeredAbilityContext): unknown[] => {
             if(context.costs.optionalFateCost === 0) {
-                return undefined;
+                return [];
             }
             return ['paying {1} fate', [amount]];
         },
@@ -860,8 +861,8 @@ export function optionalFateCost(amount: number, forcePayment: (context: Trigger
                 return;
             }
 
-            let choices = [];
-            let handlers = [];
+            let choices: string[] = [];
+            let handlers: Array<() => void> = [];
             context.costs.optionalFateCost = 0;
 
             if(fateAvailable) {
@@ -910,8 +911,8 @@ export function optionalGiveFateCost(amount: number): Cost {
             if(!context.player.opponent || !context.player.opponent.checkRestrictions('gainFate', context)) {
                 fateAvailable = false;
             }
-            let choices = [];
-            let handlers = [];
+            let choices: string[] = [];
+            let handlers: Array<() => void> = [];
             context.costs.optionalFateCost = 0;
 
             if(fateAvailable) {
@@ -1042,7 +1043,7 @@ export function optionalHonorTransferFromOpponentCost(canPayFunc = (context: Tri
 
 export function nameCard(): Cost {
     return {
-        selectCardName(player, cardName, context) {
+        selectCardName(player: Player, cardName: string, context: AbilityContext) {
             context.costs.nameCardCost = cardName;
             return true;
         },
@@ -1057,7 +1058,7 @@ export function nameCard(): Cost {
         },
         resolve(context: TriggeredAbilityContext) {
             let dummyObject = {
-                selectCardName: (player, cardName, context) => {
+                selectCardName: (player: Player, cardName: string, context: AbilityContext) => {
                     context.costs.nameCardCost = cardName;
                     return true;
                 }

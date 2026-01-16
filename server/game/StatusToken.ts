@@ -12,7 +12,7 @@ export class StatusToken extends EffectSource {
 
     constructor(
         public game: Game,
-        public card: BaseCard,
+        public card: BaseCard | null,
         private initialStatus: CharacterStatus,
         title: string
     ) {
@@ -69,7 +69,7 @@ export class StatusToken extends EffectSource {
         this.persistentEffects = [];
     }
 
-    setCard(card: BaseCard) {
+    setCard(card: BaseCard | null) {
         this.removeEffects();
         this.card = card;
         this.applyEffects();

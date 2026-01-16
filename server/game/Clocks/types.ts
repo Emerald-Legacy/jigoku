@@ -7,7 +7,7 @@ export interface ClockInterface {
         stateId: number;
         mainTime: number;
         name: string;
-        delayToStartClock: number;
+        delayToStartClock?: number;
         manuallyPaused: boolean;
     };
     opponentStart(): void;
