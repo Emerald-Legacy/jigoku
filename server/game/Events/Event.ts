@@ -26,7 +26,7 @@ export class Event {
         private handler?: (event: Event & Partial<Params>) => void
     ) {
         for(const key in params) {
-            if(params.hasOwnProperty(key)) {
+            if(Object.prototype.hasOwnProperty.call(params, key)) {
                 this[key] = params[key];
             }
         }

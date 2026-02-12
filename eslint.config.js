@@ -65,7 +65,8 @@ module.exports = [
                     catch: { after: false }
                 }
             }],
-            'no-trailing-spaces': 'error'
+            'no-trailing-spaces': 'error',
+            'no-unused-vars': ['error', { varsIgnorePattern: '^_', argsIgnorePattern: '^_' }]
         }
     },
     // TypeScript source files (with type checking)
@@ -89,15 +90,22 @@ module.exports = [
             }
         },
         rules: {
-            // TypeScript rules
+            // TypeScript rules (relaxed for gradual migration)
             ...tseslint.configs.recommended.rules,
             '@typescript-eslint/no-explicit-any': 'warn',
-            '@typescript-eslint/no-unused-vars': ['error', {
+            '@typescript-eslint/no-unused-vars': ['warn', {
                 argsIgnorePattern: '^_',
                 varsIgnorePattern: '^_'
             }],
             '@typescript-eslint/no-non-null-assertion': 'warn',
             '@typescript-eslint/ban-ts-comment': 'warn',
+            '@typescript-eslint/no-require-imports': 'off',
+            '@typescript-eslint/no-empty-object-type': 'warn',
+            '@typescript-eslint/no-unsafe-function-type': 'warn',
+            '@typescript-eslint/no-duplicate-enum-values': 'warn',
+            '@typescript-eslint/no-unused-expressions': 'warn',
+            '@typescript-eslint/no-this-alias': 'warn',
+            'no-redeclare': 'off',
 
             // Jasmine rules
             'jasmine/no-spec-dupes': 'off',

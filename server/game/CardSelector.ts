@@ -51,7 +51,7 @@ class CardSelector {
 
         const factory = ModeToSelector[properties.mode!];
 
-        if (!factory) {
+        if(!factory) {
             throw new Error(`Unknown card selector mode of ${properties.mode}`);
         }
 
@@ -60,15 +60,15 @@ class CardSelector {
 
     static getDefaultedProperties(properties: CardSelectorProperties): CardSelectorProperties {
         properties = Object.assign({}, defaultProperties, properties);
-        if (properties.mode) {
+        if(properties.mode) {
             return properties;
         }
 
-        if (properties.maxStat) {
+        if(properties.maxStat) {
             properties.mode = TargetModes.MaxStat;
-        } else if (properties.numCards === 1 && !properties.multiSelect) {
+        } else if(properties.numCards === 1 && !properties.multiSelect) {
             properties.mode = TargetModes.Single;
-        } else if (properties.numCards === 0) {
+        } else if(properties.numCards === 0) {
             properties.mode = TargetModes.Unlimited;
         } else {
             properties.mode = TargetModes.UpTo;

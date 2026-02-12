@@ -47,6 +47,8 @@ export class StatusToken extends EffectSource {
                 return 'Dishonorable';
             case CharacterStatus.Tainted:
                 return 'Tainter';
+            default:
+                return '';
         }
     }
 

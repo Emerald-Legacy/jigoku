@@ -147,7 +147,7 @@ class Server {
             if(req.user) {
                 token = jwt.sign(req.user, env.secret);
                 // Remove blockList from user object for rendering
-                const { blockList, ...userWithoutBlockList } = req.user;
+                const { blockList: _blockList, ...userWithoutBlockList } = req.user;
                 req.user = userWithoutBlockList;
             }
 

@@ -32,7 +32,7 @@ class GameRouter extends EventEmitter {
     async receiveMessages() {
         while(this.running) {
             try {
-                const [identity, delimiter, msg] = await this.router.receive();
+                const [identity, _delimiter, msg] = await this.router.receive();
                 this.onMessage(identity, msg);
             } catch(err) {
                 if(this.running) {

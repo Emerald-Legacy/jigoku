@@ -6,7 +6,7 @@ export class EffectValue<V> {
 
     constructor(value: V) {
         // @ts-ignore
-        this.value = value == null ? true : value;
+        this.value = value === null || value === undefined ? true : value;
     }
 
     public setContext(context: AbilityContext): void {

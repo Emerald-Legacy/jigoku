@@ -475,7 +475,7 @@ describe('SoD - Lion', function () {
                 });
 
                 const mil = this.natsuko.getMilitarySkill();
-                const mil2 = this.challenger.getMilitarySkill();
+                const _mil2 = this.challenger.getMilitarySkill();
                 this.player2.clickCard(this.deeds);
                 this.player2.clickCard(this.natsuko);
                 expect(this.getChatLogs(5)).toContain('player2 plays Deeds, not Words to give Ikoma Natsuko +2miliary');

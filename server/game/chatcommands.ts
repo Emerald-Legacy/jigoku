@@ -45,7 +45,7 @@ class ChatCommands {
     }
 
     executeCommand(player: Player, command: string, args: string[]): boolean {
-        if (!player || !this.commands[command]) {
+        if(!player || !this.commands[command]) {
             return false;
         }
 
@@ -70,7 +70,7 @@ class ChatCommands {
 
     random(player: Player, args: string[]): void {
         const num = this.getNumberOrDefault(args[1], 4);
-        if (num > 1) {
+        if(num > 1) {
             this.game.addMessage('{0} rolls a d{1}: {2}', player, num, Math.floor(Math.random() * num) + 1);
         }
     }
@@ -85,10 +85,10 @@ class ChatCommands {
 
     claimFavor(player: Player, args: string[]): void {
         const type = args[1] || 'military';
-        this.game.addMessage("{0} uses /claim-favor to claim the emperor's {1} favor", player, type);
+        this.game.addMessage('{0} uses /claim-favor to claim the emperor\'s {1} favor', player, type);
         player.claimImperialFavor(type);
         const otherPlayer = this.game.getOtherPlayer(player);
-        if (otherPlayer) {
+        if(otherPlayer) {
             otherPlayer.loseImperialFavor();
         }
     }
@@ -134,7 +134,7 @@ class ChatCommands {
     }
 
     moveToConflict(player: Player): void {
-        if (this.game.currentConflict) {
+        if(this.game.currentConflict) {
             this.game.promptForSelect(player, {
                 activePromptTitle: 'Select cards to move into the conflict',
                 waitingPromptTitle: 'Waiting for opponent to choose cards to move',
@@ -146,7 +146,7 @@ class ChatCommands {
                 numCards: 0,
                 multiSelect: true,
                 onSelect: (p: Player, cards: BaseCard[]) => {
-                    if (p.isAttackingPlayer()) {
+                    if(p.isAttackingPlayer()) {
                         this.game.currentConflict.addAttackers(cards);
                     } else {
                         this.game.currentConflict.addDefenders(cards);
@@ -161,7 +161,7 @@ class ChatCommands {
     }
 
     sendHome(player: Player): void {
-        if (this.game.currentConflict) {
+        if(this.game.currentConflict) {
             this.game.promptForSelect(player, {
                 activePromptTitle: 'Select a card to send home',
                 waitingPromptTitle: 'Waiting for opponent to send home',
@@ -225,7 +225,7 @@ class ChatCommands {
         const token = args[1];
         const num = this.getNumberOrDefault(args[2], 1);
 
-        if (!this.isValidToken(token)) {
+        if(!this.isValidToken(token)) {
             return false;
         }
 
@@ -315,7 +315,7 @@ class ChatCommands {
         const ringElement = args[1];
         const num = this.getNumberOrDefault(args[2], 1);
 
-        if (['air', 'earth', 'fire', 'void', 'water'].includes(ringElement)) {
+        if(['air', 'earth', 'fire', 'void', 'water'].includes(ringElement)) {
             const ring = this.game.rings[ringElement];
 
             ring.modifyFate(num);
@@ -347,7 +347,7 @@ class ChatCommands {
         const ringElement = args[1];
         const num = this.getNumberOrDefault(args[2], 1);
 
-        if (['air', 'earth', 'fire', 'void', 'water'].includes(ringElement)) {
+        if(['air', 'earth', 'fire', 'void', 'water'].includes(ringElement)) {
             const ring = this.game.rings[ringElement];
 
             ring.modifyFate(-num);
@@ -378,7 +378,7 @@ class ChatCommands {
     claimRing(player: Player, args: string[]): boolean {
         const ringElement = args[1];
 
-        if (['air', 'earth', 'fire', 'void', 'water'].includes(ringElement)) {
+        if(['air', 'earth', 'fire', 'void', 'water'].includes(ringElement)) {
             const ring = this.game.rings[ringElement];
 
             ring.claimRing(player);
@@ -407,7 +407,7 @@ class ChatCommands {
     unclaimRing(player: Player, args: string[]): boolean {
         const ringElement = args[1];
 
-        if (['air', 'earth', 'fire', 'void', 'water'].includes(ringElement)) {
+        if(['air', 'earth', 'fire', 'void', 'water'].includes(ringElement)) {
             const ring = this.game.rings[ringElement];
 
             ring.resetRing();
@@ -439,7 +439,7 @@ class ChatCommands {
     }
 
     manual(player: Player): void {
-        if (this.game.manualMode) {
+        if(this.game.manualMode) {
             this.game.manualMode = false;
             this.game.addMessage('{0} switches manual mode off', player);
         } else {
@@ -451,11 +451,11 @@ class ChatCommands {
     getNumberOrDefault(string: string, defaultNumber: number): number {
         let num = parseInt(string);
 
-        if (isNaN(num)) {
+        if(isNaN(num)) {
             num = defaultNumber;
         }
 
-        if (num < 0) {
+        if(num < 0) {
             num = defaultNumber;
         }
 
@@ -463,7 +463,7 @@ class ChatCommands {
     }
 
     isValidIcon(icon: string): boolean {
-        if (!icon) {
+        if(!icon) {
             return false;
         }
 
@@ -473,7 +473,7 @@ class ChatCommands {
     }
 
     isValidToken(token: string): boolean {
-        if (!token) {
+        if(!token) {
             return false;
         }
 

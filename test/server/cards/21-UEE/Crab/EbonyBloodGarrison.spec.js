@@ -32,8 +32,8 @@ describe('Ebony Blood Garrison', () => {
         });
 
         it('chooses non stronghold provinces', function () {
-            const initialFate = this.player1.fate;
-            const initalHandSize = this.player1.hand.length;
+            const _initialFate = this.player1.fate;
+            const _initalHandSize = this.player1.hand.length;
             this.player1.clickCard(this.ebonyBloodGarrison);
             expect(this.player1).toHavePrompt('Choose a province');
             expect(this.player1).toBeAbleToSelect(this.manicuredGarden);
@@ -55,8 +55,8 @@ describe('Ebony Blood Garrison', () => {
         });
 
         it('triggers on-reveal abilities', function () {
-            const initialFate = this.player1.fate;
-            const initalHandSize = this.player1.hand.length;
+            const _initialFate = this.player1.fate;
+            const _initalHandSize = this.player1.hand.length;
 
             this.player1.clickCard(this.ebonyBloodGarrison);
             this.player1.clickCard(this.avalancheOfStone);

@@ -48,7 +48,7 @@ describe('Kitsuki Sano', function() {
             });
 
             it('does not work when opposed', function() {
-                const initialHand = this.player1.hand.length;
+                const _initialHand = this.player1.hand.length;
                 this.initiateConflict({
                     attackers: [this.kitsukiSano],
                     defenders: [this.miyaMystic]

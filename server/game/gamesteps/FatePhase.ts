@@ -92,7 +92,7 @@ export class FatePhase extends Phase {
         this.game.queueSimpleStep(() => {
             for(const player of this.game.getPlayersInFirstPlayerOrder()) {
                 if(!processed) {
-                    const numFate = events.filter((a) => !('recipient' in a) || a.recipient == null).length;
+                    const numFate = events.filter((a) => !('recipient' in a) || a.recipient === null || a.recipient === undefined).length;
                     const postFunc = player.mostRecentEffect(EffectNames.CustomFatePhaseFateRemoval);
                     if(postFunc) {
                         postFunc(player, numFate);

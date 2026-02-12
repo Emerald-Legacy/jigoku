@@ -13,23 +13,23 @@ class DynastyCardAction extends BaseAction {
     }
 
     meetsRequirements(context: AbilityContext = this.createContext(), ignoredRequirements: string[] = []): string | undefined {
-        if (!ignoredRequirements.includes('facedown') && this.card.isFacedown()) {
+        if(!ignoredRequirements.includes('facedown') && this.card.isFacedown()) {
             return 'facedown';
-        } else if (!ignoredRequirements.includes('player') && context.player !== this.card.controller) {
+        } else if(!ignoredRequirements.includes('player') && context.player !== this.card.controller) {
             return 'player';
-        } else if (!ignoredRequirements.includes('phase') && context.game.currentPhase !== Phases.Dynasty) {
+        } else if(!ignoredRequirements.includes('phase') && context.game.currentPhase !== Phases.Dynasty) {
             return 'phase';
-        } else if (
+        } else if(
             !ignoredRequirements.includes('location') &&
             !context.player.isCardInPlayableLocation(this.card, PlayTypes.PlayFromProvince)
         ) {
             return 'location';
-        } else if (
+        } else if(
             !ignoredRequirements.includes('cannotTrigger') &&
             !this.card.canPlay(context, PlayTypes.PlayFromProvince)
         ) {
             return 'cannotTrigger';
-        } else if (this.card.anotherUniqueInPlay(context.player)) {
+        } else if(this.card.anotherUniqueInPlay(context.player)) {
             return 'unique';
         }
         return super.meetsRequirements(context);
@@ -42,7 +42,7 @@ class DynastyCardAction extends BaseAction {
             context.source,
             (context as any).chooseFate
         );
-        if (context.source.checkRestrictions('placeFate', context)) {
+        if(context.source.checkRestrictions('placeFate', context)) {
             context.source
                 .getRawEffects()
                 .filter((effect: any) => effect.type === EffectNames.GainExtraFateWhenPlayed)
@@ -60,7 +60,7 @@ class DynastyCardAction extends BaseAction {
     executeHandler(context: AbilityContext): void {
         let extraFate = context.source.sumEffects(EffectNames.GainExtraFateWhenPlayed);
         const legendaryFate = context.source.sumEffects(EffectNames.LegendaryFate);
-        if (!context.source.checkRestrictions('placeFate', context)) {
+        if(!context.source.checkRestrictions('placeFate', context)) {
             extraFate = 0;
         }
         extraFate = extraFate + legendaryFate;

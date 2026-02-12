@@ -93,10 +93,10 @@ class EffectSource extends GameObject {
      */
     addEffectToEngine(properties: EffectProperties): Effect[] {
         const { effect, ...rest } = properties;
-        if (Array.isArray(effect)) {
+        if(Array.isArray(effect)) {
             return effect.map((factory) => this.game.effectEngine.add(factory(this.game, this, rest)));
         }
-        if (effect) {
+        if(effect) {
             return [this.game.effectEngine.add(effect(this.game, this, rest))];
         }
         return [];

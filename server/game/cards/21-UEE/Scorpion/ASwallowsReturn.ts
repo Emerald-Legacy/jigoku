@@ -11,8 +11,8 @@ export default class ASwallowsReturn extends DrawCard {
         this.action({
             title: 'Reveal cards and take ones matching named type',
             condition: (context) =>
-                context.game.currentConflict != null &&
-        context.player.opponent != null &&
+                context.game.currentConflict !== null &&
+        context.player.opponent !== null &&
         context.player.opponent.conflictDeck.size() >= CARD_COUNT,
             cost: AbilityDsl.costs.reveal((context) => context.player.opponent.conflictDeck.first(CARD_COUNT)),
             cannotBeMirrored: true,

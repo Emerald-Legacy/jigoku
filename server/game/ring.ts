@@ -36,7 +36,7 @@ class Ring extends EffectSource {
         const check = (p: Player) =>
             this.getEffects(EffectNames.ConsiderRingAsClaimed).some((match: (player: Player) => boolean) => match(p)) ||
             this.claimedBy === p.name;
-        if (player) {
+        if(player) {
             return check(player);
         }
         return this.game.getPlayers().some((p: Player) => check(p));
@@ -71,7 +71,7 @@ class Ring extends EffectSource {
     }
 
     flipConflictType(): void {
-        if (this.conflictType === ConflictTypes.Military) {
+        if(this.conflictType === ConflictTypes.Military) {
             this.conflictType = ConflictTypes.Political;
         } else {
             this.conflictType = ConflictTypes.Military;
@@ -80,8 +80,8 @@ class Ring extends EffectSource {
 
     getElements(): Elements[] {
         let elements: Elements[] = this.getEffects(EffectNames.AddElement).concat([this.element]);
-        if (this.game.isDuringConflict()) {
-            if (this.isContested()) {
+        if(this.game.isDuringConflict()) {
+            if(this.isContested()) {
                 elements = elements.concat(
                     ...this.game.currentConflict
                         .getAttackers()
@@ -99,7 +99,7 @@ class Ring extends EffectSource {
     }
 
     hasElement(element: Elements | 'none'): boolean {
-        if (element === 'none') {
+        if(element === 'none') {
             return false;
         }
         return this.getElements().includes(element);
@@ -110,7 +110,7 @@ class Ring extends EffectSource {
     }
 
     getMenu(): Array<{ command: string; text: string }> | undefined {
-        if (this.menu.length === 0 || !this.game.manualMode) {
+        if(this.menu.length === 0 || !this.game.manualMode) {
             return undefined;
         }
 
@@ -150,7 +150,7 @@ class Ring extends EffectSource {
     getState(activePlayer?: Player): Record<string, any> {
         let selectionState = {};
 
-        if (activePlayer) {
+        if(activePlayer) {
             selectionState = activePlayer.getRingSelectionState(this);
         }
 

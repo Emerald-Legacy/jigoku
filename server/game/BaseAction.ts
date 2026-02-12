@@ -21,7 +21,7 @@ class BaseAction extends BaseAbility {
 
     constructor(card: BaseCard, costs: Cost[] = [], target?: TargetProperties) {
         const properties: { cost: Cost[]; target?: TargetProperties } = { cost: costs };
-        if (target) {
+        if(target) {
             properties.target = target;
         }
         super(properties);
@@ -29,7 +29,7 @@ class BaseAction extends BaseAbility {
     }
 
     meetsRequirements(context: AbilityContext): string | undefined {
-        if (this.isCardPlayed() && this.card.isLimited() && context.player.limitedPlayed >= context.player.maxLimited) {
+        if(this.isCardPlayed() && this.card.isLimited() && context.player.limitedPlayed >= context.player.maxLimited) {
             return 'limited';
         }
 

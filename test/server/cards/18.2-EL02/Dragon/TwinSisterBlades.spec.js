@@ -64,7 +64,7 @@ describe('Twin Sister Blades', function() {
                 attackers: [this.yoshi],
                 defenders: [this.dojiWhisperer]
             });
-            let hand = this.player1.hand.length;
+            let _hand = this.player1.hand.length;
 
             this.player2.pass();
             expect(this.player1).toHavePrompt('Conflict Action Window');

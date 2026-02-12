@@ -11,23 +11,23 @@ class DuplicateUniqueAction extends BaseAction {
     }
 
     meetsRequirements(context: AbilityContext = this.createContext(), ignoredRequirements: string[] = []): string | undefined {
-        if (!ignoredRequirements.includes('facedown') && this.card.isFacedown()) {
+        if(!ignoredRequirements.includes('facedown') && this.card.isFacedown()) {
             return 'facedown';
         }
 
-        if (!ignoredRequirements.includes('phase') && this.card.game.currentPhase !== Phases.Dynasty) {
+        if(!ignoredRequirements.includes('phase') && this.card.game.currentPhase !== Phases.Dynasty) {
             return 'phase';
         }
 
-        if (!this.card.controller.isCardInPlayableLocation(this.card, PlayTypes.PlayFromProvince) && !this.card.controller.isCardInPlayableLocation(this.card, PlayTypes.PlayFromHand)) {
-            if (!ignoredRequirements.includes('location')) {
+        if(!this.card.controller.isCardInPlayableLocation(this.card, PlayTypes.PlayFromProvince) && !this.card.controller.isCardInPlayableLocation(this.card, PlayTypes.PlayFromHand)) {
+            if(!ignoredRequirements.includes('location')) {
                 return 'location';
             }
         }
-        if (!this.card.anotherUniqueInPlayControlledBy(context.player)) {
+        if(!this.card.anotherUniqueInPlayControlledBy(context.player)) {
             return 'unique';
         }
-        if (!this.card.checkRestrictions('placeFate', context)) {
+        if(!this.card.checkRestrictions('placeFate', context)) {
             return 'restriction';
         }
         return super.meetsRequirements(context);

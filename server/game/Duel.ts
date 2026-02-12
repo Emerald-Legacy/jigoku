@@ -195,7 +195,7 @@ export class Duel extends GameObject {
         }
 
         if((this.winner?.length ?? 0) > 0) {
-            this.winner = this.winner;
+            // winner is already set, keep it
         } else {
             this.winner = undefined;
             this.winningPlayer = undefined;

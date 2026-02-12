@@ -82,10 +82,10 @@ class BaseAbility {
         this.targets = [];
         this.buildTargets(properties);
         this.cost = this.buildCost(properties.cost);
-        for (const cost of this.cost) {
-            if (cost.dependsOn) {
+        for(const cost of this.cost) {
+            if(cost.dependsOn) {
                 const dependsOnTarget = this.targets.find((target) => target.name === cost.dependsOn);
-                if (dependsOnTarget) {
+                if(dependsOnTarget) {
                     dependsOnTarget.dependentCost = cost;
                 }
             }
@@ -94,11 +94,11 @@ class BaseAbility {
     }
 
     buildCost(cost?: any): any[] {
-        if (!cost) {
+        if(!cost) {
             return [];
         }
 
-        if (!Array.isArray(cost)) {
+        if(!Array.isArray(cost)) {
             return [cost];
         }
 
@@ -107,32 +107,32 @@ class BaseAbility {
 
     buildTargets(properties: BaseAbilityProperties): void {
         this.targets = [];
-        if (properties.target) {
+        if(properties.target) {
             this.targets.push(this.getAbilityTarget('target', properties.target));
-        } else if (properties.targets) {
-            for (const key of Object.keys(properties.targets)) {
+        } else if(properties.targets) {
+            for(const key of Object.keys(properties.targets)) {
                 this.targets.push(this.getAbilityTarget(key, properties.targets[key]));
             }
         }
     }
 
     getAbilityTarget(name: string, properties: any): AbilityTarget {
-        if (properties.gameAction) {
-            if (!Array.isArray(properties.gameAction)) {
+        if(properties.gameAction) {
+            if(!Array.isArray(properties.gameAction)) {
                 properties.gameAction = [properties.gameAction];
             }
         } else {
             properties.gameAction = [];
         }
-        if (properties.mode === TargetModes.Select) {
+        if(properties.mode === TargetModes.Select) {
             return new AbilityTargetSelect(name, properties, this);
-        } else if (properties.mode === TargetModes.Ring) {
+        } else if(properties.mode === TargetModes.Ring) {
             return new AbilityTargetRing(name, properties, this);
-        } else if (properties.mode === TargetModes.Ability) {
+        } else if(properties.mode === TargetModes.Ability) {
             return new AbilityTargetAbility(name, properties, this);
-        } else if (properties.mode === TargetModes.Token) {
+        } else if(properties.mode === TargetModes.Token) {
             return new AbilityTargetToken(name, properties, this);
-        } else if (properties.mode === TargetModes.ElementSymbol) {
+        } else if(properties.mode === TargetModes.ElementSymbol) {
             return new AbilityTargetElementSymbol(name, properties, this);
         }
         return new AbilityTargetCard(name, properties, this);
@@ -142,11 +142,11 @@ class BaseAbility {
         // check legal targets exist
         // check costs can be paid
         // check for potential to change game state
-        if (!this.canPayCosts(context) && !ignoredRequirements.includes('cost')) {
+        if(!this.canPayCosts(context) && !ignoredRequirements.includes('cost')) {
             return 'cost';
         }
-        if (this.targets.length === 0) {
-            if (this.gameAction.length > 0 && !this.checkGameActionsForPotential(context)) {
+        if(this.targets.length === 0) {
+            if(this.gameAction.length > 0 && !this.checkGameActionsForPotential(context)) {
                 return 'condition';
             }
             return '';
@@ -168,33 +168,33 @@ class BaseAbility {
 
     getCosts(context: AbilityContext, playCosts = true, triggerCosts = true): any[] {
         let costs = this.cost.map((a) => a);
-        if ((context as any).ignoreFateCost) {
+        if((context as any).ignoreFateCost) {
             costs = costs.filter((cost) => !cost.isPrintedFateCost);
         }
 
-        if (!playCosts) {
+        if(!playCosts) {
             costs = costs.filter((cost) => !cost.isPlayCost);
         }
         return costs;
     }
 
     resolveCosts(context: AbilityContext, results: TargetResults): void {
-        for (const cost of this.getCosts(context, results.playCosts, results.triggerCosts)) {
+        for(const cost of this.getCosts(context, results.playCosts, results.triggerCosts)) {
             context.game.queueSimpleStep(() => {
-                if (!results.cancelled) {
-                    if (cost.addEventsToArray) {
+                if(!results.cancelled) {
+                    if(cost.addEventsToArray) {
                         cost.addEventsToArray(results.events!, context, results);
                     } else {
-                        if (cost.resolve) {
+                        if(cost.resolve) {
                             cost.resolve(context, results);
                         }
                         context.game.queueSimpleStep(() => {
-                            if (!results.cancelled) {
+                            if(!results.cancelled) {
                                 const newEvents = cost.payEvent
                                     ? cost.payEvent(context)
                                     : context.game.getEvent('payCost', {}, () => cost.pay?.(context));
-                                if (Array.isArray(newEvents)) {
-                                    for (const event of newEvents) {
+                                if(Array.isArray(newEvents)) {
+                                    for(const event of newEvents) {
                                         results.events!.push(event);
                                     }
                                 } else {
@@ -226,7 +226,7 @@ class BaseAbility {
             payCostsFirst: false,
             delayTargeting: null
         };
-        for (const target of this.targets) {
+        for(const target of this.targets) {
             context.game.queueSimpleStep(() => target.resolve(context, targetResults));
         }
         return targetResults;
@@ -235,11 +235,11 @@ class BaseAbility {
     resolveRemainingTargets(context: AbilityContext, nextTarget: AbilityTarget): TargetResults {
         const index = this.targets.indexOf(nextTarget);
         let targets = this.targets.slice();
-        if (targets.slice(0, index).every((target) => target.checkTarget(context))) {
+        if(targets.slice(0, index).every((target) => target.checkTarget(context))) {
             targets = targets.slice(index);
         }
         const targetResults: TargetResults = {};
-        for (const target of targets) {
+        for(const target of targets) {
             context.game.queueSimpleStep(() => target.resolve(context, targetResults));
         }
         return targetResults;

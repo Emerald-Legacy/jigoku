@@ -72,7 +72,7 @@ class AbilityTargetCard {
                 return;
             }
         }
-        let { cardCondition, player: playerProp, ...otherProperties } = this.properties;
+        let { cardCondition: _cardCondition, player: _playerProp, ...otherProperties } = this.properties;
 
         let buttons = [];
         let waitingPromptTitle = '';
