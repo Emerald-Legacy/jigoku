@@ -1,13 +1,11 @@
 import { AbilityContext } from '../../../AbilityContext';
 import AbilityDsl from '../../../abilitydsl';
-import type BaseCard from '../../../basecard';
 import { Conflict } from '../../../conflict';
-import { EventNames, TargetModes, Locations, CardTypes, Players, AbilityTypes } from '../../../Constants';
+import { EventNames, TargetModes, AbilityTypes } from '../../../Constants';
 import DrawCard from '../../../drawcard';
 import { EventRegistrar } from '../../../EventRegistrar';
 import { ProvinceCard } from '../../../ProvinceCard';
 import Ring from '../../../ring';
-import type { TriggeredAbilityContext } from '../../../TriggeredAbilityContext';
 
 export default class VengefulKami extends DrawCard {
     static id = 'vengeful-kami';

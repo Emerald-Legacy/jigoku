@@ -10,9 +10,9 @@ export default class Pressure extends DrawCard {
         this.reaction({
             title: 'Move home a character',
             when: {
-                onConflictDeclared: (event, context) => true,
-                onDefendersDeclared: (event, context) => true,
-                onMoveToConflict: (event, context) => true
+                onConflictDeclared: (_event, _context) => true,
+                onDefendersDeclared: (_event, _context) => true,
+                onMoveToConflict: (_event, _context) => true
             },
             gameAction: AbilityDsl.actions.selectCard(context => ({
                 activePromptTitle: 'Choose a character',

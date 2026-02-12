@@ -262,7 +262,7 @@ class BaseCard extends EffectSource {
      * Create card abilities by calling subsequent methods with appropriate properties
      * @param {Object} ability - AbilityDsl object containing limits, costs, effects, and game actions
      */
-    setupCardAbilities(ability: any): void {
+    setupCardAbilities(_ability: any): void {
 
     }
 
@@ -582,7 +582,7 @@ class BaseCard extends EffectSource {
         }
     }
 
-    leavesPlay(destination?: Locations): void {
+    leavesPlay(_destination?: Locations): void {
         this.tokens = {};
         this.#resetLimits();
         this.controller = this.owner;
@@ -1022,7 +1022,7 @@ class BaseCard extends EffectSource {
      * Checks whether an attachment can be played on a given card or ring.  Intended to be
      * used by cards inheriting this class
      */
-    canPlayOn(card: BaseCard | Ring): boolean {
+    canPlayOn(_card: BaseCard | Ring): boolean {
 
         return true;
     }

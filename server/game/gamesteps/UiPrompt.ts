@@ -37,11 +37,11 @@ export class UiPrompt extends BaseStep {
         }
     }
 
-    activeCondition(player: Player): boolean {
+    activeCondition(_player: Player): boolean {
         return true;
     }
 
-    activePrompt(player: Player): undefined | ActivePrompt {
+    activePrompt(_player: Player): undefined | ActivePrompt {
         return undefined;
     }
 
@@ -96,7 +96,7 @@ export class UiPrompt extends BaseStep {
         return this.menuCommand(player, arg, method);
     }
 
-    menuCommand(player: Player, arg: string, method: string): boolean {
+    menuCommand(_player: Player, _arg: string, _method: string): boolean {
         return true;
     }
 }

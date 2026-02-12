@@ -1,6 +1,6 @@
 import { AbilityContext } from '../../../AbilityContext';
 import AbilityDsl from '../../../abilitydsl';
-import { CharacterStatus, Players, CardTypes, Locations, Durations } from '../../../Constants';
+import { Players, CardTypes, Durations } from '../../../Constants';
 import DrawCard from '../../../drawcard';
 
 export default class BayushiShinobu extends DrawCard {

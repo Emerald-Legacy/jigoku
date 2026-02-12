@@ -1,4 +1,4 @@
-import { CardTypes, ConflictTypes, Durations, EventNames, Players, TargetModes } from '../../../Constants';
+import { CardTypes, ConflictTypes, Durations, Players, TargetModes } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';
 

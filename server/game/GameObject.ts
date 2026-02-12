@@ -153,11 +153,11 @@ export class GameObject {
         return true;
     }
 
-    public getShortSummaryForControls(activePlayer: Player) {
+    public getShortSummaryForControls(_activePlayer: Player) {
         return this.getShortSummary();
     }
 
-    public isParticipating(card: DrawCard): boolean {
+    public isParticipating(_card: DrawCard): boolean {
         return this.game.currentConflict && this.game.currentConflict.isParticipating(this);
     }
 

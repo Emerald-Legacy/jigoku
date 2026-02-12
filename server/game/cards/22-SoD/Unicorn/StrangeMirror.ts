@@ -37,7 +37,7 @@ export default class StrangeMirror extends DrawCard {
                     target: context.source
                 }),
                 message: '{3} is discarded because the chosen characters are unique',
-                messageArgs: thenContext => [context.source]
+                messageArgs: _thenContext => [context.source]
             })
         });
     }

@@ -250,7 +250,7 @@ export class ReduceableFateCost implements Cost {
     /**
      * USED FOR EXTENDING THIS CLASS
      */
-    protected afterPayHook(event: any): void {}
+    protected afterPayHook(_event: any): void {}
 
     public payEvent(context: AbilityContext): Event {
         const amount = this.getReducedCost(context);

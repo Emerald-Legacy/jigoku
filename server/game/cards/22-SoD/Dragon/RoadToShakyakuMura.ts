@@ -1,5 +1,5 @@
 import type { AbilityContext } from '../../../AbilityContext';
-import { Players, CardTypes, Locations } from '../../../Constants';
+import { CardTypes, Locations } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';
 import type { Cost } from '../../../Costs';

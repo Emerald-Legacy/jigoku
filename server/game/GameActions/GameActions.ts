@@ -1,4 +1,3 @@
-import { AbilityContext } from '../AbilityContext';
 import { AddTokenAction, AddTokenProperties } from './AddTokenAction';
 import { AffinityAction, AffinityActionProperties } from './AffinityAction';
 import { AttachAction, AttachActionProperties } from './AttachAction';

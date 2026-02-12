@@ -22,14 +22,14 @@ const eyesOfTheSerpentCost = function () {
         getCostMessage(context: TriggeredAbilityContext) {
             return ['paying 1 {1}', context.costs.serpentCostPaid];
         },
-        getActionName(context: TriggeredAbilityContext) {
+        getActionName(_context: TriggeredAbilityContext) {
             return 'eyesOfTheSerpentCost';
         },
         canPay: function (context: TriggeredAbilityContext) {
             const { honorAvailable, fateAvailable } = resourcesAvailable(context);
             return honorAvailable || fateAvailable;
         },
-        resolve: function (context, result) {
+        resolve: function (context, _result) {
             const { honorAvailable, fateAvailable } = resourcesAvailable(context);
             context.costs.merchantOfCuriositiesCostPaid = false;
             if(honorAvailable && fateAvailable) {
@@ -78,7 +78,7 @@ export default class EyesOfTheSerpent extends DrawCard {
                 cardCondition: (card) => card.isParticipating() && card.isDishonored,
                 gameAction: AbilityDsl.actions.multiple([
                     AbilityDsl.actions.taint(),
-                    AbilityDsl.actions.onAffinity((context) => ({
+                    AbilityDsl.actions.onAffinity((_context) => ({
                         trait: 'air',
                         gameAction: AbilityDsl.actions.gainHonor(context => ({
                             target: context.player,

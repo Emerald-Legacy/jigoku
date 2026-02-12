@@ -1,4 +1,4 @@
-import { CardTypes, Locations, Players, Decks } from '../../../Constants';
+import { CardTypes, Players, Decks } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';
 

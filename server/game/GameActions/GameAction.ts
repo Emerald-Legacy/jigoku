@@ -34,7 +34,7 @@ export class GameAction<P extends GameActionProperties = GameActionProperties> {
         }
     }
 
-    defaultTargets(context: AbilityContext): any[] {
+    defaultTargets(_context: AbilityContext): any[] {
         return [];
     }
 
@@ -52,7 +52,7 @@ export class GameAction<P extends GameActionProperties = GameActionProperties> {
         return properties;
     }
 
-    getCostMessage(context: AbilityContext): undefined | [string, any[]] {
+    getCostMessage(_context: AbilityContext): undefined | [string, any[]] {
         return [this.cost, []];
     }
 
@@ -143,17 +143,17 @@ export class GameAction<P extends GameActionProperties = GameActionProperties> {
         return events;
     }
 
-    addPropertiesToEvent(event: any, target: any, context: AbilityContext, additionalProperties = {}): void {
+    addPropertiesToEvent(event: any, target: any, context: AbilityContext, _additionalProperties = {}): void {
         event.context = context;
     }
 
-    eventHandler(event: any, additionalProperties = {}): void {}
+    eventHandler(event: any, _additionalProperties = {}): void {}
 
-    checkEventCondition(event: Event, additionalProperties = {}): boolean {
+    checkEventCondition(event: Event, _additionalProperties = {}): boolean {
         return true;
     }
 
-    isEventFullyResolved(event: Event, target: any, context: AbilityContext, additionalProperties = {}): boolean {
+    isEventFullyResolved(event: Event, target: any, context: AbilityContext, _additionalProperties = {}): boolean {
         return !event.cancelled && event.name === this.eventName;
     }
 
@@ -193,7 +193,7 @@ export class GameAction<P extends GameActionProperties = GameActionProperties> {
         }
     }
 
-    hasTargetsChosenByInitiatingPlayer(context: AbilityContext, additionalProperties = {}): boolean {
+    hasTargetsChosenByInitiatingPlayer(context: AbilityContext, _additionalProperties = {}): boolean {
         return false;
     }
 }

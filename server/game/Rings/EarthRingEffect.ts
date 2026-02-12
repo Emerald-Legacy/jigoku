@@ -32,7 +32,7 @@ export class EarthRingEffect extends BaseAbility {
     public constructor(
         optional: boolean,
         gameMode: GameModes,
-        private onResolution = (resolved: boolean) => {}
+        private onResolution = (_resolved: boolean) => {}
     ) {
         super({
             target: {

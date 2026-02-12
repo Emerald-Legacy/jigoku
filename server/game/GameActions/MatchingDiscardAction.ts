@@ -29,7 +29,7 @@ export class MatchingDiscardAction extends PlayerAction {
         return ['make {0} discard all cards that match a condition', [properties.target]];
     }
 
-    canAffect(player: Player, context: AbilityContext, additionalProperties = {}): boolean {
+    canAffect(player: Player, context: AbilityContext, _additionalProperties = {}): boolean {
         return player.hand.size() > 0 && super.canAffect(player, context);
     }
 

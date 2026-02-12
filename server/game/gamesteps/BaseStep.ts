@@ -11,15 +11,15 @@ export class BaseStep implements Step {
         return undefined;
     }
 
-    public onCardClicked(player: Player, card: BaseCard): boolean {
+    public onCardClicked(_player: Player, _card: BaseCard): boolean {
         return false;
     }
 
-    public onRingClicked(player: Player, ring: Ring): boolean {
+    public onRingClicked(_player: Player, _ring: Ring): boolean {
         return false;
     }
 
-    public onMenuCommand(player: Player, arg: string, uuid: string, method: string): boolean {
+    public onMenuCommand(_player: Player, _arg: string, _uuid: string, _method: string): boolean {
         return false;
     }
 

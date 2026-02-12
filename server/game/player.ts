@@ -1557,7 +1557,7 @@ class Player extends GameObject {
         return this.anyEffect(EffectNames.EventsCannotBeCancelled);
     }
 
-    isTopDynastyCardShown(activePlayer?: Player): boolean {
+    isTopDynastyCardShown(_activePlayer?: Player): boolean {
         if(this.dynastyDeck.size() <= 0) {
             return false;
         }
@@ -1642,7 +1642,7 @@ class Player extends GameObject {
             timerSettings: this.timerSettings,
             strongholdProvince: this.getSummaryForCardList(this.strongholdProvince, activePlayer),
             user: (() => {
-                const { password, email, ...userSummary } = this.user;
+                const { password: _password, email: _email, ...userSummary } = this.user;
                 return userSummary;
             })()
         };

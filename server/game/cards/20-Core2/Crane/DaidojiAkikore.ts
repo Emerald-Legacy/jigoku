@@ -31,7 +31,7 @@ export default class DaidojiAkikore extends DrawCard {
                 gameAction: (duel) =>
                     AbilityDsl.actions.conditional({
                         condition: duel.winningPlayer === context.player,
-                        trueGameAction: AbilityDsl.actions.playerLastingEffect((context) => ({
+                        trueGameAction: AbilityDsl.actions.playerLastingEffect((_context) => ({
                             targetController: duel.winningPlayer,
                             effect: AbilityDsl.effects.changePlayerSkillModifier(3)
                         })),

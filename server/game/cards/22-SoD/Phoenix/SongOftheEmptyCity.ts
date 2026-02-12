@@ -4,7 +4,7 @@ import type BaseCard from '../../../basecard';
 import { EventNames, AbilityTypes, Locations, CardTypes, Players } from '../../../Constants';
 import DrawCard from '../../../drawcard';
 import { EventRegistrar } from '../../../EventRegistrar';
-import type { TriggeredAbilityContext } from '../../../TriggeredAbilityContext';
+
 
 export default class SongOfTheEmptyCity extends DrawCard {
     static id = 'song-of-the-empty-city';

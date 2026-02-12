@@ -1,5 +1,5 @@
 import { CardTypes, TargetModes, Players, CharacterStatus } from '../../../Constants';
-import { GameAction } from '../../../GameActions/GameAction';
+
 import { StatusToken } from '../../../StatusToken';
 import AbilityDsl from '../../../abilitydsl';
 import BaseCard from '../../../basecard';

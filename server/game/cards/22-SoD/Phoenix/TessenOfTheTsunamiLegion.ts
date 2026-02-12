@@ -21,9 +21,9 @@ export default class TessenOfTheTsunamiLegion extends DrawCard {
                     target: {
                         cardType: CardTypes.Character,
                         controller: Players.Self,
-                        cardCondition: (card, context) => card.hasTrait('bushi'),
+                        cardCondition: (card, _context) => card.hasTrait('bushi'),
                         gameAction: AbilityDsl.actions.multiple([
-                            AbilityDsl.actions.cardLastingEffect(context => ({
+                            AbilityDsl.actions.cardLastingEffect(_context => ({
                                 effect: AbilityDsl.effects.modifyMilitarySkill(2)
                             })),
                             AbilityDsl.actions.conditional({

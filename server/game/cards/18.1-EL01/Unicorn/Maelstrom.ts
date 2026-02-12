@@ -5,7 +5,7 @@ import AbilityDsl from '../../../abilitydsl';
 
 const maelstromCost = function (): Cost {
     return {
-        getActionName(context) {
+        getActionName(_context) {
             return 'maelstromCost';
         },
         getCostMessage: function (context) {

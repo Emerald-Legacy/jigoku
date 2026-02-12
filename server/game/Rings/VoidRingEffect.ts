@@ -10,7 +10,7 @@ export class VoidRingEffect extends BaseAbility {
 
     constructor(
         optional: boolean,
-        private onResolution = (resolved: boolean) => {}
+        private onResolution = (_resolved: boolean) => {}
     ) {
         super({
             target: {

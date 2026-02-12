@@ -30,7 +30,7 @@ export class GameServer {
         try {
             privateKey = fs.readFileSync(env.gameNodeKeyPath).toString();
             certificate = fs.readFileSync(env.gameNodeCertPath).toString();
-        } catch(e) {
+        } catch{
             this.protocol = 'http';
         }
 

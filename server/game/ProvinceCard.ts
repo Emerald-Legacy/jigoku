@@ -168,7 +168,7 @@ export class ProvinceCard extends BaseCard {
         );
     }
 
-    canDeclare(type, ring) {
+    canDeclare(type, _ring) {
         return this.canBeAttacked() && !this.getEffects(EffectNames.CannotHaveConflictsDeclaredOfType).includes(type);
     }
 

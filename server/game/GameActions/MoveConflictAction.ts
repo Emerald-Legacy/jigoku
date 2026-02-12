@@ -30,7 +30,7 @@ export class MoveConflictAction extends CardGameAction {
         return super.canAffect(card, context);
     }
 
-    eventHandler(event, additionalProperties): void {
+    eventHandler(event, _additionalProperties): void {
         let context = event.context;
         let newProvince = event.card;
 

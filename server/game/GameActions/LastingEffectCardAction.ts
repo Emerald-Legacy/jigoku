@@ -51,14 +51,14 @@ export class LastingEffectCardAction<
 
     addPropertiesToEvent(event, card: BaseCard, context: AbilityContext, additionalProperties): void {
         super.addPropertiesToEvent(event, card, context, additionalProperties);
-        const { effect, ...otherProperties } = this.getProperties(context, additionalProperties);
+        const { effect: _effect, ...otherProperties } = this.getProperties(context, additionalProperties);
         const effectProperties = Object.assign({ match: event.card, location: Locations.Any }, otherProperties);
-        let effects = effect.map((factory) =>
+        let effects = _effect.map((factory) =>
             factory(event.context.game, event.context.source, effectProperties)
         );
 
-        event.effectTypes = effects.map(_effect => _effect.effect.type);
-        const matches = effects.map(_effect => _effect.match);
+        event.effectTypes = effects.map(eff => eff.effect.type);
+        const matches = effects.map(eff => eff.match);
         event.matches = Array.isArray(matches) ? matches : [matches];
     }
 
@@ -69,7 +69,7 @@ export class LastingEffectCardAction<
         }
 
         const lastingEffectRestrictions = event.card.getEffects(EffectNames.CannotApplyLastingEffects);
-        const { effect, ...otherProperties } = properties;
+        const { effect: _effect, ...otherProperties } = properties;
         const effectProperties = Object.assign({ match: event.card, location: Locations.Any }, otherProperties);
         let effects = properties.effect.map((factory) =>
             factory(event.context.game, event.context.source, effectProperties)

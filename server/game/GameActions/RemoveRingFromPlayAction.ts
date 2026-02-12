@@ -23,7 +23,7 @@ export class RemoveRingFromPlayAction extends RingAction {
         return super.canAffect(ring, context);
     }
 
-    eventHandler(event, additionalProperties): void {
+    eventHandler(event, _additionalProperties): void {
         let ring = event.ring;
         let context = event.context;
 

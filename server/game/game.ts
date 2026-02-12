@@ -1318,7 +1318,7 @@ class Game extends EventEmitter {
                 conflictState = this.currentConflict.getSummary();
             }
 
-            const { blocklist, email, emailHash, promptedActionWindows, settings, ...ownerSummary } = this.owner;
+            const { blocklist: _blocklist, email: _email, emailHash: _emailHash, promptedActionWindows: _promptedActionWindows, settings: _settings, ...ownerSummary } = this.owner;
             return {
                 id: this.id,
                 manualMode: this.manualMode,
@@ -1376,7 +1376,7 @@ class Game extends EventEmitter {
             };
         }
 
-        const { blocklist, email, emailHash, promptedActionWindows, settings, ...ownerSummary } = this.owner;
+        const { blocklist: _blocklist2, email: _email2, emailHash: _emailHash2, promptedActionWindows: _promptedActionWindows2, settings: _settings2, ...ownerSummary } = this.owner;
         return {
             allowSpectators: this.allowSpectators,
             createdAt: this.createdAt,

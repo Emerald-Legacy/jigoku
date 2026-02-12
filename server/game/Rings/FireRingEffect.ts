@@ -10,7 +10,7 @@ export class FireRingEffect extends BaseAbility {
 
     constructor(
         private optional: boolean,
-        private onResolution = (resolved: boolean) => {}
+        private onResolution = (_resolved: boolean) => {}
     ) {
         super({
             target: {

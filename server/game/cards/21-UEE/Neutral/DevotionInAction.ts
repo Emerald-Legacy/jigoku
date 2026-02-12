@@ -1,7 +1,5 @@
-import type { AbilityContext } from '../../../AbilityContext';
 import { CardTypes, Durations, Locations, Players } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
-import type BaseCard from '../../../basecard';
 import DrawCard from '../../../drawcard';
 
 export default class DevotionInAction extends DrawCard {

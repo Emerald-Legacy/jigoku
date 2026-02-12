@@ -1,5 +1,4 @@
 import { Durations } from '../../Constants';
-import { ProvinceCard } from '../../ProvinceCard';
 import AbilityDsl from '../../abilitydsl';
 import DrawCard from '../../drawcard';
 

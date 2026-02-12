@@ -1,5 +1,4 @@
 import type { AbilityContext } from '../AbilityContext';
-import type BaseCard from '../basecard';
 import { EventNames, Locations, Players, TargetModes } from '../Constants';
 import type Player from '../player';
 import { PlayerAction, type PlayerActionProperties } from './PlayerAction';

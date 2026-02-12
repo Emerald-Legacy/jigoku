@@ -176,8 +176,8 @@ export function discardTopCardsFromDeck(properties: { amount: number; deck: Deck
     const destination =
         properties.deck === Decks.DynastyDeck ? Locations.DynastyDiscardPile : Locations.ConflictDiscardPile;
     return {
-        getActionName: (context) => 'discardTopCardsFromDeck',
-        getCostMessage: (context) => ['discarding {0}'],
+        getActionName: (_context) => 'discardTopCardsFromDeck',
+        getCostMessage: (_context) => ['discarding {0}'],
         canPay: (context) => getDeck(context).size() >= 4,
         resolve: (context) => {
             context.costs.discardTopCardsFromDeck = getDeck(context).first(4);
@@ -506,7 +506,7 @@ export function variableFateCost(properties: {
     };
 }
 
-export function returnRings(amount = -1, ringCondition = (ring: Ring, context: TriggeredAbilityContext) => true): Cost {
+export function returnRings(amount = -1, ringCondition = (_ring: Ring, _context: TriggeredAbilityContext) => true): Cost {
     return {
         promptsPlayer: true,
         canPay(context: TriggeredAbilityContext) {
@@ -517,7 +517,7 @@ export function returnRings(amount = -1, ringCondition = (ring: Ring, context: T
             }
             return false;
         },
-        getActionName(context: TriggeredAbilityContext) {
+        getActionName(_context: TriggeredAbilityContext) {
             return 'returnRing';
         },
         getCostMessage(context: TriggeredAbilityContext) {
@@ -759,7 +759,7 @@ export function discardHand(): Cost {
         canPay(context: TriggeredAbilityContext) {
             return context.game.actions.chosenDiscard().canAffect(context.player, context);
         },
-        resolve(context: TriggeredAbilityContext, result) {
+        resolve(context: TriggeredAbilityContext, _result) {
             context.costs.discardHand = context.player.hand.value();
         },
         payEvent(context: TriggeredAbilityContext) {
@@ -838,7 +838,7 @@ export function optionalFateCost(amount: number, forcePayment: (context: Trigger
             }
             return true;
         },
-        getActionName(context: TriggeredAbilityContext) {
+        getActionName(_context: TriggeredAbilityContext) {
             return 'optionalFateCost';
         },
         getCostMessage: (context: TriggeredAbilityContext): unknown[] => {
@@ -987,13 +987,13 @@ export function optionalOpponentLoseHonor(
     };
 }
 
-export function optionalHonorTransferFromOpponentCost(canPayFunc = (context: TriggeredAbilityContext) => true): Cost {
+export function optionalHonorTransferFromOpponentCost(canPayFunc = (_context: TriggeredAbilityContext) => true): Cost {
     return {
         promptsPlayer: true,
         canPay() {
             return true;
         },
-        resolve(context: TriggeredAbilityContext, result) {
+        resolve(context: TriggeredAbilityContext, _result) {
             context.costs.optionalHonorTransferFromOpponentCostPaid = false;
 
             if(!canPayFunc(context)) {
@@ -1047,7 +1047,7 @@ export function nameCard(): Cost {
             context.costs.nameCardCost = cardName;
             return true;
         },
-        getActionName(context: TriggeredAbilityContext) {
+        getActionName(_context: TriggeredAbilityContext) {
             return 'nameCard';
         },
         getCostMessage(context: TriggeredAbilityContext) {
@@ -1087,7 +1087,7 @@ export function switchLocation(): Cost {
 
             return canMoveHome || canMoveToConflict;
         },
-        getActionName(context: TriggeredAbilityContext) {
+        getActionName(_context: TriggeredAbilityContext) {
             return 'switchLocation';
         },
         getCostMessage(context: TriggeredAbilityContext) {
@@ -1096,7 +1096,7 @@ export function switchLocation(): Cost {
             }
             return ['moving {1} to the conflict', [context.source]];
         },
-        resolve(context: TriggeredAbilityContext, result) {
+        resolve(context: TriggeredAbilityContext, _result) {
             context.costs.switchLocation = context.source;
         },
         payEvent(context: TriggeredAbilityContext) {

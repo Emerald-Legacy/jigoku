@@ -1,7 +1,6 @@
 import AbilityDsl from '../../../abilitydsl';
 import { CardTypes, Durations, Locations } from '../../../Constants';
 import DrawCard from '../../../drawcard';
-import { ProvinceCard } from '../../../ProvinceCard';
 
 export default class ScoutsSteed extends DrawCard {
     static id = 'scout-s-steed';

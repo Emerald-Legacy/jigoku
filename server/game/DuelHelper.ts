@@ -1,8 +1,5 @@
-const AbilityLimit = require('./AbilityLimit');
 const AbilityDsl = require('./abilitydsl');
-const ThenAbility = require('./ThenAbility');
-const Costs = require('./Costs.js');
-const { Locations, CardTypes, EffectNames, Players } = require('./Constants');
+const { CardTypes, Players } = require('./Constants');
 import { InitiateDuel } from './Interfaces';
 
 export const initiateDuel = (game, card, properties) => {

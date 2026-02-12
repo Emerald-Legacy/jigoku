@@ -1,4 +1,4 @@
-import { DuelTypes, Durations } from '../../../Constants';
+import { DuelTypes } from '../../../Constants';
 import { Duel } from '../../../Duel';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';

@@ -21,7 +21,7 @@ export class ClaimFavorAction extends PlayerAction<ClaimFavorProperties> {
         return !!properties.target;
     }
 
-    canAffect(player: Player, context: AbilityContext, additionalProperties = {}): boolean {
+    canAffect(player: Player, context: AbilityContext, _additionalProperties = {}): boolean {
         return !!player && super.canAffect(player, context);
     }
 

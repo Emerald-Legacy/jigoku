@@ -1,4 +1,4 @@
-import { CardTypes, Players, Phases } from '../../../Constants';
+import { CardTypes, Players } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';
 
@@ -12,7 +12,7 @@ export default class CorneringManeuver extends DrawCard {
             target: {
                 cardType: CardTypes.Character,
                 cardCondition: (card, context) => card.hasTrait('bushi') && card.isParticipatingFor(context.player),
-                gameAction: AbilityDsl.actions.cardLastingEffect(context => ({
+                gameAction: AbilityDsl.actions.cardLastingEffect(_context => ({
                     effect: AbilityDsl.effects.modifyMilitarySkill(2)
                 }))
             },

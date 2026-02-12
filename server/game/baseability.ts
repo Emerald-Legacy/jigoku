@@ -20,7 +20,7 @@ interface AbilityTarget {
     getGameAction(context: AbilityContext): any[];
 }
 
-interface AbilityCost {
+interface _AbilityCost {
     dependsOn?: string;
     canPay(context: AbilityContext): boolean;
     canIgnoreForTargeting?: boolean;
@@ -166,7 +166,7 @@ class BaseAbility {
         return this.getCosts(context).every((cost) => cost.canPay(contextCopy));
     }
 
-    getCosts(context: AbilityContext, playCosts = true, triggerCosts = true): any[] {
+    getCosts(context: AbilityContext, playCosts = true, _triggerCosts = true): any[] {
         let costs = this.cost.map((a) => a);
         if((context as any).ignoreFateCost) {
             costs = costs.filter((cost) => !cost.isPrintedFateCost);
@@ -263,14 +263,14 @@ class BaseAbility {
         );
     }
 
-    displayMessage(context: AbilityContext): void {}
+    displayMessage(_context: AbilityContext): void {}
 
     /**
      * Executes the ability once all costs have been paid. Inheriting classes
      * should override this method to implement their behavior; by default it
      * does nothing.
      */
-    executeHandler(context: AbilityContext): void {}
+    executeHandler(_context: AbilityContext): void {}
 
     isAction(): boolean {
         return false;

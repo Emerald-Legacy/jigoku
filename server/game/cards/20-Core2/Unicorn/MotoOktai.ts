@@ -13,7 +13,7 @@ export default class MotoOktai extends DrawCard {
         this.interrupt({
             title: 'Increase this character\'s skill',
             when: {
-                onCardLeavesPlay: ({ card }, context) =>
+                onCardLeavesPlay: ({ card }, _context) =>
                     card.location === Locations.PlayArea && card.type === CardTypes.Character
             },
             effect: 'get +{1} {2} for this phase - he is emboldened by justice, but unburdened by mercy!',

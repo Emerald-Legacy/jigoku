@@ -30,7 +30,7 @@ class UnlimitedAbilityLimit {
         return true;
     }
 
-    public isAtMax(player: Player): boolean {
+    public isAtMax(_player: Player): boolean {
         return false;
     }
 
@@ -43,9 +43,9 @@ class UnlimitedAbilityLimit {
         this.#useCount.clear();
     }
 
-    public registerEvents(eventEmitter: EventEmitter): void {}
+    public registerEvents(_eventEmitter: EventEmitter): void {}
 
-    public unregisterEvents(eventEmitter: EventEmitter): void {}
+    public unregisterEvents(_eventEmitter: EventEmitter): void {}
 
     public currentForPlayer(player: Player) {
         return this.#useCount.get(this.#getKey(player.name)) ?? 0;
@@ -87,9 +87,9 @@ class FixedAbilityLimit {
         this.#useCount.clear();
     }
 
-    public registerEvents(eventEmitter: EventEmitter): void {}
+    public registerEvents(_eventEmitter: EventEmitter): void {}
 
-    public unregisterEvents(eventEmitter: EventEmitter): void {}
+    public unregisterEvents(_eventEmitter: EventEmitter): void {}
 
     public currentForPlayer(player: Player) {
         return this.#useCount.get(this.#getKey(player.name)) ?? 0;

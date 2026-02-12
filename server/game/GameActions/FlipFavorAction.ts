@@ -12,7 +12,7 @@ export class FlipFavorAction extends PlayerAction<FlipFavorProperties> {
     eventName = EventNames.OnFlipFavor;
     effect = 'flip the Imperial favor';
 
-    hasLegalTarget(context: AbilityContext, additionalProperties = {}): boolean {
+    hasLegalTarget(context: AbilityContext, _additionalProperties = {}): boolean {
         return this.playerHasFlippableFavor(context.player) || this.playerHasFlippableFavor(context.player.opponent);
     }
 
@@ -20,7 +20,7 @@ export class FlipFavorAction extends PlayerAction<FlipFavorProperties> {
         return player && !!player.imperialFavor && player.imperialFavor !== 'both';
     }
 
-    canAffect(player: Player, context: AbilityContext, additionalProperties = {}): boolean {
+    canAffect(player: Player, context: AbilityContext, _additionalProperties = {}): boolean {
         return !!player && this.playerHasFlippableFavor(player) && super.canAffect(player, context);
     }
 

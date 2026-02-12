@@ -28,7 +28,7 @@ export class WaterRingEffect extends BaseAbility {
     constructor(
         optional: boolean,
         gameMode: GameModes,
-        private onResolution = (resolved: boolean) => {}
+        private onResolution = (_resolved: boolean) => {}
     ) {
         super({
             target: {

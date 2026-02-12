@@ -8,13 +8,6 @@ import { AbilityContext } from './AbilityContext';
 import BaseAbility = require('./baseability');
 import Player = require('./player');
 
-type Element = 'air' | 'earth' | 'fire' | 'void' | 'water';
-
-type RingProps = {
-    name: string;
-    factory: (optional: boolean, gameMode: GameModes) => RingAbility;
-};
-
 interface RingAbility extends BaseAbility {
     title: string;
     cannotTargetFirst: boolean;

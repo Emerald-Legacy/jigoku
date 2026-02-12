@@ -2,7 +2,6 @@ import { AbilityContext } from '../../../AbilityContext';
 import AbilityDsl from '../../../abilitydsl';
 import { Elements } from '../../../Constants';
 import DrawCard from '../../../drawcard';
-import type { TriggeredAbilityContext } from '../../../TriggeredAbilityContext';
 
 const ELEMENT_KEY = 'kitsuki-seiji-water';
 

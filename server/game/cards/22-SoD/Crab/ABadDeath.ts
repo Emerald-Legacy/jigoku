@@ -1,4 +1,4 @@
-import { CardTypes, Locations, TargetModes } from '../../../Constants';
+import { CardTypes } from '../../../Constants';
 import AbilityDsl = require('../../../abilitydsl');
 import DrawCard = require('../../../drawcard');
 

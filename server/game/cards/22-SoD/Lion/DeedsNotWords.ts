@@ -1,7 +1,6 @@
-import { CardTypes, Players, Durations, TargetModes } from '../../../Constants';
+import { CardTypes, Players, TargetModes } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';
-import CardAbility from '../../../CardAbility';
 
 export default class DeedsNotWords extends DrawCard {
     static id = 'deeds-not-words';
@@ -13,9 +12,9 @@ export default class DeedsNotWords extends DrawCard {
             target: {
                 cardType: CardTypes.Character,
                 controller: Players.Self,
-                cardCondition: (card, context) => card.isParticipating(),
+                cardCondition: (card, _context) => card.isParticipating(),
                 gameAction: AbilityDsl.actions.sequential([
-                    AbilityDsl.actions.cardLastingEffect(context => ({
+                    AbilityDsl.actions.cardLastingEffect(_context => ({
                         effect: AbilityDsl.effects.modifyMilitarySkill(2)
                     })),
                     AbilityDsl.actions.playerLastingEffect(context => ({
@@ -59,7 +58,7 @@ export default class DeedsNotWords extends DrawCard {
                 }
             }),
             effect: 'give {0} +2{1}',
-            effectArgs: context => ['miliary']
+            effectArgs: _context => ['miliary']
         });
     }
 }

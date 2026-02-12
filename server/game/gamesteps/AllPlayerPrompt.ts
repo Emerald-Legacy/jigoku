@@ -6,7 +6,7 @@ export class AllPlayerPrompt extends UiPrompt {
         return !this.completionCondition(player);
     }
 
-    completionCondition(player: Player) {
+    completionCondition(_player: Player) {
         return false;
     }
 

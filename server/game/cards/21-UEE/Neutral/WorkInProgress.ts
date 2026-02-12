@@ -1,6 +1,5 @@
 import AbilityDsl from '../../../abilitydsl';
 import { CardTypes, Locations } from '../../../Constants';
-import { Cost } from '../../../Costs';
 import DrawCard from '../../../drawcard';
 
 export default class WorkInProgress extends DrawCard {
