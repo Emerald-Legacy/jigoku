@@ -57,6 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete old container images
+        continue-on-error: true
         uses: actions/delete-package-versions@v5
         with:
           package-name: ringteki
