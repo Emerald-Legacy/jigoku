@@ -58,7 +58,7 @@ export default class MiokosSong extends StrongholdCard {
                                     '{0} puts {1} into {2}, discarding {3}',
                                     context.player,
                                     selectedCard,
-                                    province.location,
+                                    province.isFacedown() ? province.location : province,
                                     cardsFromProvince
                                 );
                             }
