@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo').default;
 const passport = require('passport');
@@ -118,8 +117,8 @@ class Server {
         passport.deserializeUser(this.deserializeUser.bind(this));
 
         app.use(cookieParser());
-        app.use(bodyParser.json());
-        app.use(bodyParser.urlencoded({ extended: false }));
+        app.use(express.json());
+        app.use(express.urlencoded({ extended: false }));
 
         // Apply rate limiting to API routes
         app.use('/api/', apiLimiter);
