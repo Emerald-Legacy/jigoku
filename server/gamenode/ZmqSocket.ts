@@ -7,6 +7,7 @@ import { logger } from '../logger';
 export class ZmqSocket extends EventEmitter {
     private socket: Dealer;
     private running = false;
+    private heartbeatInterval: ReturnType<typeof setInterval>;
 
     constructor(private listenAddress: string, private protocol: string) {
         super();
@@ -20,6 +21,12 @@ export class ZmqSocket extends EventEmitter {
 
         // Connection is immediate in v6, emit connect event on next tick
         setImmediate(() => this.onConnect());
+
+        // Send periodic heartbeat so the lobby can discover us after a restart.
+        // The lobby's Router only learns our identity when we send a message.
+        this.heartbeatInterval = setInterval(() => {
+            this.send('HEARTBEAT');
+        }, 30_000);
     }
 
     private async receiveMessages() {
@@ -63,7 +70,7 @@ export class ZmqSocket extends EventEmitter {
         try {
             return z
                 .object({
-                    command: z.enum(['PING', 'STARTGAME', 'SPECTATOR', 'CONNECTFAILED', 'CLOSEGAME', 'CARDDATA']),
+                    command: z.enum(['PING', 'REGISTER', 'STARTGAME', 'SPECTATOR', 'CONNECTFAILED', 'CLOSEGAME', 'CARDDATA']),
                     arg: z.any()
                 })
                 .parse(JSON.parse(msg.toString()));
@@ -83,6 +90,10 @@ export class ZmqSocket extends EventEmitter {
         switch(message.command) {
             case 'PING':
                 this.send('PONG');
+                break;
+            case 'REGISTER':
+                logger.info('Lobby requested re-registration');
+                this.emit('onGameSync', this.onGameSync.bind(this));
                 break;
             case 'STARTGAME':
                 this.emit('onStartGame', message.arg);
@@ -104,6 +115,7 @@ export class ZmqSocket extends EventEmitter {
 
     public close() {
         this.running = false;
+        clearInterval(this.heartbeatInterval);
         this.socket.close();
     }
 }
