@@ -10,6 +10,8 @@ import * as GameActions from './GameActions/GameActions';
 import type Player from './player';
 
 export class GameObject {
+    declare public game: Game;
+    declare public name: string;
     public uuid = uuidV1();
     protected id: string;
     protected printedType = '';
@@ -17,9 +19,11 @@ export class GameObject {
     private effects = [] as CardEffect[];
 
     public constructor(
-        public game: Game,
-        public name: string
+        game: Game,
+        name: string
     ) {
+        this.game = game;
+        this.name = name;
         this.id = name;
     }
 
