@@ -9,6 +9,13 @@ module.exports = [
         ignores: ['build/**', 'node_modules/**', 'coverage/**']
     },
     js.configs.recommended,
+    // Disable new ESLint 10 rules that flag many existing patterns — enable later
+    {
+        rules: {
+            'no-useless-assignment': 'off',
+            'preserve-caught-error': 'off'
+        }
+    },
     // JavaScript files
     {
         files: ['**/*.js'],

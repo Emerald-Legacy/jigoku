@@ -7,7 +7,7 @@ export interface MultipleActionProperties extends GameActionProperties {
 }
 
 export class MultipleGameAction extends GameAction {
-    defaultProperties: MultipleActionProperties;
+    declare defaultProperties: MultipleActionProperties;
 
     constructor(gameActions: GameAction[]) {
         super({ gameActions: gameActions } as GameActionProperties);

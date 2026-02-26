@@ -8,7 +8,7 @@ export interface RefillFaceupProperties extends PlayerActionProperties {
 }
 
 export class RefillFaceupAction extends PlayerAction {
-    defaultProperties: RefillFaceupProperties;
+    declare defaultProperties: RefillFaceupProperties;
 
     name = 'refill';
     effect = 'refill its province faceup';

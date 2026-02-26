@@ -7,7 +7,7 @@ export interface SequentialProperties extends GameActionProperties {
 }
 
 export class SequentialAction extends GameAction {
-    defaultProperties: SequentialProperties;
+    declare defaultProperties: SequentialProperties;
 
     constructor(gameActions: GameAction[]) {
         super({ gameActions: gameActions } as GameActionProperties);

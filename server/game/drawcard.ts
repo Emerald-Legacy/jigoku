@@ -44,8 +44,8 @@ class DrawCard extends BaseCard {
     fate: number;
     bowed: boolean;
     covert: boolean;
-    isConflict: boolean;
-    isDynasty: boolean;
+    declare isConflict: boolean;
+    declare isDynasty: boolean;
     allowDuplicatesOfAttachment: boolean;
     inConflict: boolean = false;
     new: boolean = false;

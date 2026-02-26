@@ -7,7 +7,7 @@ export interface MultipleContextActionProperties extends GameActionProperties {
 }
 
 export class MultipleContextGameAction extends GameAction {
-    defaultProperties: MultipleContextActionProperties;
+    declare defaultProperties: MultipleContextActionProperties;
 
     getEffectMessage(context: AbilityContext): [string, any[]] {
         let { gameActions } = this.getProperties(context);

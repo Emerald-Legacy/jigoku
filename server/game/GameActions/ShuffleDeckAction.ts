@@ -8,7 +8,7 @@ export interface ShuffleDeckProperties extends PlayerActionProperties {
 }
 
 export class ShuffleDeckAction extends PlayerAction {
-    defaultProperties: ShuffleDeckProperties;
+    declare defaultProperties: ShuffleDeckProperties;
 
     name = 'refill';
     effect = 'refill its province faceup';

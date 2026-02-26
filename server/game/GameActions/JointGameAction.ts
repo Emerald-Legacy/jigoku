@@ -8,7 +8,7 @@ export interface JointGameProperties extends GameActionProperties {
 
 export class JointGameAction extends GameAction {
     effect = 'do several things';
-    defaultProperties: JointGameProperties;
+    declare defaultProperties: JointGameProperties;
 
     constructor(gameActions: GameAction[]) {
         super({ gameActions: gameActions } as GameActionProperties);

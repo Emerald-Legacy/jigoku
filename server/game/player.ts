@@ -35,9 +35,9 @@ import type { AbilityContext } from './AbilityContext';
 class Player extends GameObject {
     user: any;
     emailHash: string;
-    id: string;
+    declare id: string;
     owner: boolean;
-    printedType: string;
+    declare printedType: string;
     socket: any;
     disconnected: boolean;
     left: boolean;

@@ -41,7 +41,7 @@ class CardAbility extends ThenAbility {
     location: Locations[];
     printedAbility: boolean;
     cannotBeCancelled?: boolean;
-    cannotTargetFirst: boolean;
+    declare cannotTargetFirst: boolean;
     cannotBeMirrored: boolean;
     max?: any;
     abilityIdentifier: string;

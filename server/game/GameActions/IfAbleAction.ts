@@ -8,7 +8,7 @@ export interface IfAbleActionProperties extends GameActionProperties {
 }
 
 export class IfAbleAction extends GameAction {
-    defaultProperties: IfAbleActionProperties;
+    declare defaultProperties: IfAbleActionProperties;
 
     getProperties(context: AbilityContext, additionalProperties = {}): IfAbleActionProperties {
         let properties = super.getProperties(context, additionalProperties) as IfAbleActionProperties;
