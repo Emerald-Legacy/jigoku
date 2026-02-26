@@ -1308,7 +1308,7 @@ class BaseCard extends EffectSource {
         return 'none';
     }
 
-    public override getShortSummary() {
+    public getShortSummary() {
         return {
             ...super.getShortSummary(),
             packId: this.packId
