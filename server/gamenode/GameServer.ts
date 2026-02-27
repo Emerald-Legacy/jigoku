@@ -61,7 +61,9 @@ export class GameServer {
                 ? http.createServer(requestHandler)
                 : https.createServer({ key: privateKey, cert: certificate }, requestHandler);
 
-        server.listen(env.gameNodeSocketIoPort);
+        server.listen(env.gameNodeSocketIoPort, () => {
+            logger.info(`${env.gameNodeName} listening on port ${env.gameNodeSocketIoPort} (proxy port ${env.gameNodeProxyPort ?? 'none'}, protocol ${this.protocol})`);
+        });
 
         const corsConfig = env.domain
             ? { origin: [`https://${env.domain}`, `http://${env.domain}`], credentials: true }
@@ -196,6 +198,8 @@ export class GameServer {
     }
 
     onStartGame(pendingGame: PendingGame): void {
+        const playerNames = Object.values<Player>(pendingGame.players).map(p => p.name).join(' vs ');
+        logger.info(`Starting game ${pendingGame.id} (${playerNames}), total games: ${this.games.size + 1}`);
         const game = new Game(pendingGame as any, { router: this, shortCardData: this.shortCardData });
         this.games.set(pendingGame.id, game);
 
@@ -228,7 +232,7 @@ export class GameServer {
             gameSummaries.push(retGame);
         }
 
-        logger.info('syncing', gameSummaries.length, ' games');
+        logger.info(`syncing ${gameSummaries.length} games`);
 
         callback(gameSummaries);
     }
@@ -256,6 +260,7 @@ export class GameServer {
         }
 
         this.games.delete(gameId);
+        logger.info(`Closed game ${gameId}, remaining games: ${this.games.size}`);
         this.zmqSocket.send('GAMECLOSED', { game: game.id });
     }
 
@@ -273,7 +278,7 @@ export class GameServer {
 
         const game = this.findGameForUser(ioSocket.request.user.username);
         if(!game) {
-            logger.info('No game for', ioSocket.request.user.username, 'disconnecting');
+            logger.info(`No game for ${ioSocket.request.user.username}, disconnecting`);
             ioSocket.disconnect();
             return;
         }

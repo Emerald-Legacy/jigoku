@@ -13,6 +13,7 @@ export class ZmqSocket extends EventEmitter {
         super();
 
         this.socket = new Dealer({ routingId: env.gameNodeName });
+        logger.info(`${env.gameNodeName} connecting to lobby at ${env.mqUrl}`);
         this.socket.connect(env.mqUrl);
         this.running = true;
 
@@ -56,6 +57,7 @@ export class ZmqSocket extends EventEmitter {
 
     private onGameSync(games: any) {
         const port = env.gameNodeProxyPort ?? env.gameNodeSocketIoPort;
+        logger.info(`${env.gameNodeName} sending HELLO to lobby (address=${this.listenAddress}, port=${port}, games=${Object.keys(games).length})`);
         this.send('HELLO', {
             maxGames: env.maxGames,
             address: this.listenAddress,
@@ -85,6 +87,10 @@ export class ZmqSocket extends EventEmitter {
 
         if(!message) {
             return;
+        }
+
+        if(message.command !== 'PING') {
+            logger.info(`${env.gameNodeName} received ${message.command} from lobby`);
         }
 
         switch(message.command) {
