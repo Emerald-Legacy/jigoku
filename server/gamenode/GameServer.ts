@@ -109,7 +109,7 @@ export class GameServer {
     }
 
     handleError(game: Game, e: Error) {
-        logger.error(e);
+        logger.error(`Game error: ${e.message}\n${e.stack}`);
 
         let gameState = game.getState();
         let debugData: any = {};
@@ -173,7 +173,7 @@ export class GameServer {
         if(token && token !== 'undefined') {
             jwt.verify(token as string, env.secret, function (err, user) {
                 if(err) {
-                    logger.info(err);
+                    logger.info(`JWT verification failed: ${err.message}`);
                     return next();
                 }
 

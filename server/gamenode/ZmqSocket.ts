@@ -38,7 +38,7 @@ export class ZmqSocket extends EventEmitter {
                 this.onMessage(delimiter, msg.toString());
             } catch(err) {
                 if(this.running) {
-                    logger.error('Error receiving message:', err);
+                    logger.error(`Error receiving message: ${err}`);
                 }
             }
         }
@@ -47,7 +47,7 @@ export class ZmqSocket extends EventEmitter {
     public send(command: string, arg?: unknown) {
         // Dealer sends [delimiter, message] - router will add routing based on identity
         this.socket.send(['', JSON.stringify({ command, arg })]).catch(err => {
-            logger.error('Error sending message:', err);
+            logger.error(`Error sending message: ${err}`);
         });
     }
 
@@ -77,7 +77,7 @@ export class ZmqSocket extends EventEmitter {
                 })
                 .parse(JSON.parse(msg.toString()));
         } catch(e) {
-            logger.info(e);
+            logger.info(`Failed to parse ZMQ message: ${e}`);
             return;
         }
     }
