@@ -26,6 +26,7 @@ export class ZmqSocket extends EventEmitter {
         // Send periodic heartbeat so the lobby can discover us after a restart.
         // The lobby's Router only learns our identity when we send a message.
         this.heartbeatInterval = setInterval(() => {
+            logger.debug(`${env.gameNodeName} sending HEARTBEAT`);
             this.send('HEARTBEAT');
         }, 30_000);
     }
@@ -89,7 +90,9 @@ export class ZmqSocket extends EventEmitter {
             return;
         }
 
-        if(message.command !== 'PING') {
+        if(message.command === 'PING') {
+            logger.debug(`${env.gameNodeName} received PING from lobby`);
+        } else {
             logger.info(`${env.gameNodeName} received ${message.command} from lobby`);
         }
 

@@ -8,7 +8,10 @@ const rotate = new winston.transports.DailyRotateFile({
     zippedArchive: true
 });
 
+const logLevel = process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug');
+
 export const logger = winston.createLogger({
+    level: logLevel,
     transports: [new winston.transports.Console(), rotate],
     format: winston.format.combine(
         winston.format.timestamp(),
