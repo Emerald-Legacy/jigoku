@@ -223,7 +223,8 @@ class CardAbility extends ThenAbility {
         const messageArgs: any[] = [context.player, ' ' + messageVerb + ' ', context.source, gainedAbility, origin];
         const costMessages = this.cost
             .map((cost: any) => {
-                if(cost.getCostMessage && cost.getCostMessage(context)) {
+                const costMsg = cost.getCostMessage && cost.getCostMessage(context);
+                if(costMsg && costMsg.length > 0) {
                     let card: any = context.costs[cost.getActionName(context)];
                     if(card && card.isFacedown && card.isFacedown()) {
                         card = 'a facedown card';
