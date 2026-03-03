@@ -11,6 +11,7 @@
         "esModuleInterop": true,
         "strictBindCallApply": true,
         "strictFunctionTypes": true,
+        "useDefineForClassFields": false,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true
     },
