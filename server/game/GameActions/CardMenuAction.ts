@@ -27,6 +27,7 @@ export class CardMenuAction extends CardGameAction<CardMenuProperties> {
         subActionProperties: (card) => ({ target: card }),
         targets: false,
         cards: [],
+        choices: [],
         cardCondition: () => true,
         gameAction: null
     };
