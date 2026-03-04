@@ -11,6 +11,7 @@ describe('Mirumoto Hitori', function () {
             });
 
             this.hitori = this.player1.findCardByName('mirumoto-hitori');
+            this.game.rings.air.claimRing(this.player1);
         });
 
         it('should interrupt leaving play in the fate phase, remove from game, and re-enter at the start of the next round', function () {
@@ -19,12 +20,16 @@ describe('Mirumoto Hitori', function () {
             expect(this.player1).toHavePrompt('Triggered Abilities');
             expect(this.player1).toBeAbleToSelect(this.hitori);
             this.player1.clickCard(this.hitori);
+
+            // Pay cost: return a claimed ring
+            this.player1.clickRing('air');
+            this.player1.clickPrompt('Done');
+
             expect(this.hitori.location).toBe('removed from game');
             expect(this.getChatLogs(10)).toContain(
-                'player1 uses Mirumoto Hitori to remove Mirumoto Hitori from play, to be put back into play next round'
+                'player1 uses Mirumoto Hitori, returning the Air Ring to remove Mirumoto Hitori from play, to be put back into play next round'
             );
 
-            this.player1.clickPrompt('Done');
             this.player2.clickPrompt('Done');
 
             this.player2.clickPrompt('End Round');
