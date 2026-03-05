@@ -4,6 +4,7 @@ import AbilityDsl from './abilitydsl';
 import BaseCard from './basecard';
 import type Player from './player';
 import type DrawCard from './drawcard';
+import StatModifier from './StatModifier';
 
 type CardData = {
     strength: number;
@@ -94,6 +95,55 @@ export class ProvinceCard extends BaseCard {
             }
             return bonus + s;
         }, 0);
+    }
+
+    getStrengthModifiers(): StatModifier[] {
+        const modifiers: StatModifier[] = [];
+
+        // Set effects override everything
+        const setEffects = this.getRawEffects().filter((e: any) => e.type === EffectNames.SetProvinceStrength);
+        if(setEffects.length > 0) {
+            const effect = setEffects[setEffects.length - 1];
+            modifiers.push(StatModifier.fromEffect(effect.getValue(this), effect, true, StatModifier.getEffectName(effect)));
+            return modifiers;
+        }
+
+        // Base strength
+        const setBaseEffects = this.getRawEffects().filter((e: any) => e.type === EffectNames.SetBaseProvinceStrength);
+        if(setBaseEffects.length > 0) {
+            const effect = setBaseEffects[setBaseEffects.length - 1];
+            modifiers.push(StatModifier.fromEffect(effect.getValue(this), effect, true, StatModifier.getEffectName(effect)));
+        } else {
+            modifiers.push(new StatModifier(this.printedStrength, 'Printed', false, undefined));
+            for(const effect of this.getRawEffects().filter((e: any) => e.type === EffectNames.ModifyBaseProvinceStrength)) {
+                modifiers.push(StatModifier.fromEffect(effect.getValue(this), effect, false));
+            }
+        }
+
+        // Province strength modifiers
+        for(const effect of this.getRawEffects().filter((e: any) => e.type === EffectNames.ModifyProvinceStrength)) {
+            modifiers.push(StatModifier.fromEffect(effect.getValue(this), effect, false));
+        }
+
+        // Dynasty/stronghold card bonus
+        const dynastyBonus = this.getDynastyOrStrongholdCardModifier();
+        if(dynastyBonus !== 0) {
+            modifiers.push(new StatModifier(dynastyBonus, 'Cards in Province', false, undefined));
+        }
+
+        return modifiers;
+    }
+
+    get strengthSummary(): { stat?: string; modifiers?: any[] } {
+        if(this.facedown) {
+            return {};
+        }
+        const modifiers = this.getStrengthModifiers().map((modifier: any) => Object.assign({}, modifier));
+        const strength = this.getStrength();
+        return {
+            stat: strength.toString(),
+            modifiers: modifiers
+        };
     }
 
     get element() {
@@ -287,6 +337,7 @@ export class ProvinceCard extends BaseCard {
             ...baseSummary,
             isProvince: this.isProvince,
             isBroken: this.isBroken,
+            strengthSummary: this.strengthSummary,
             attachments: this.attachments.map((attachment) => attachment.getSummary(activePlayer, hideWhenFaceup))
         };
     }

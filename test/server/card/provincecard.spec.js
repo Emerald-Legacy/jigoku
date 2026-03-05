@@ -154,3 +154,210 @@ describe('Province Card - Turning Provinces Facedown with Tokens Tests', functio
         });
     });
 });
+
+describe('Province Card - strengthSummary', function() {
+    integration(function() {
+        describe('basic strength summary', function() {
+            beforeEach(function() {
+                this.setupTest({
+                    phase: 'conflict',
+                    player1: {
+                        inPlay: ['doji-kuwanan'],
+                        provinces: ['manicured-garden', 'pilgrimage'],
+                        dynastyDiscard: ['imperial-storehouse']
+                    },
+                    player2: {
+                        inPlay: ['brash-samurai'],
+                        provinces: ['fertile-fields']
+                    }
+                });
+
+                this.manicured = this.player1.findCardByName('manicured-garden', 'province 1');
+                this.pilgrimage = this.player1.findCardByName('pilgrimage', 'province 2');
+                this.fertileFields = this.player2.findCardByName('fertile-fields', 'province 1');
+                this.storehouse = this.player1.findCardByName('imperial-storehouse');
+                this.kuwanan = this.player1.findCardByName('doji-kuwanan');
+                this.brash = this.player2.findCardByName('brash-samurai');
+            });
+
+            it('should return printed strength for a face-up province with no modifiers', function() {
+                this.manicured.facedown = false;
+                this.game.checkGameState(true);
+
+                const summary = this.manicured.strengthSummary;
+                expect(summary.stat).toBe(this.manicured.strength.toString());
+                expect(summary.modifiers).toBeDefined();
+                expect(summary.modifiers.length).toBeGreaterThan(0);
+
+                const printedModifier = summary.modifiers.find(m => m.name === 'Printed');
+                expect(printedModifier).toBeDefined();
+                expect(printedModifier.amount).toBe(this.manicured.printedStrength);
+            });
+
+            it('should return empty object for a face-down province', function() {
+                this.manicured.facedown = true;
+                const summary = this.manicured.strengthSummary;
+                expect(summary.stat).toBeUndefined();
+                expect(summary.modifiers).toBeUndefined();
+            });
+
+            it('should have modifiers that sum to the total strength', function() {
+                this.manicured.facedown = false;
+                this.game.checkGameState(true);
+
+                const modifiers = this.manicured.getStrengthModifiers();
+                const total = modifiers.reduce((sum, m) => sum + m.amount, 0);
+                expect(total).toBe(this.manicured.strength);
+            });
+        });
+
+        describe('with holdings modifying strength', function() {
+            beforeEach(function() {
+                this.setupTest({
+                    phase: 'conflict',
+                    player1: {
+                        inPlay: ['doji-kuwanan'],
+                        provinces: ['manicured-garden'],
+                        dynastyDiscard: ['imperial-storehouse']
+                    },
+                    player2: {
+                        inPlay: ['brash-samurai'],
+                        provinces: ['fertile-fields']
+                    }
+                });
+
+                this.manicured = this.player1.findCardByName('manicured-garden', 'province 1');
+                this.storehouse = this.player1.placeCardInProvince('imperial-storehouse', 'province 1');
+                this.manicured.facedown = false;
+                this.game.checkGameState(true);
+            });
+
+            it('should include a "Cards in Province" modifier when a holding with strength bonus is present', function() {
+                const bonus = this.storehouse.getProvinceStrengthBonus();
+                const summary = this.manicured.strengthSummary;
+
+                if(bonus !== 0) {
+                    const holdingModifier = summary.modifiers.find(m => m.name === 'Cards in Province');
+                    expect(holdingModifier).toBeDefined();
+                    expect(holdingModifier.amount).toBe(bonus);
+                }
+            });
+
+            it('should have the correct total strength in the stat field', function() {
+                const summary = this.manicured.strengthSummary;
+                expect(summary.stat).toBe(this.manicured.strength.toString());
+            });
+        });
+
+        describe('with persistent effects modifying strength', function() {
+            beforeEach(function() {
+                this.setupTest({
+                    phase: 'conflict',
+                    player1: {
+                        inPlay: ['doji-kuwanan'],
+                        provinces: ['manicured-garden', 'onsen-quarters']
+                    },
+                    player2: {
+                        inPlay: ['brash-samurai'],
+                        provinces: ['fertile-fields']
+                    }
+                });
+
+                this.manicured = this.player1.findCardByName('manicured-garden', 'province 1');
+                this.onsen = this.player1.findCardByName('onsen-quarters', 'province 2');
+                this.fertileFields = this.player2.findCardByName('fertile-fields', 'province 1');
+
+                this.manicured.facedown = false;
+                this.onsen.facedown = false;
+                this.fertileFields.facedown = false;
+                this.game.checkGameState(true);
+            });
+
+            it('should reflect Onsen Quarters +1 bonus in the total strength', function() {
+                const summary = this.manicured.strengthSummary;
+                const expectedStrength = this.manicured.printedStrength + 1;
+                expect(this.manicured.strength).toBe(expectedStrength);
+                expect(summary.stat).toBe(expectedStrength.toString());
+            });
+
+            it('should not include Onsen Quarters modifier on enemy provinces', function() {
+                const summary = this.fertileFields.strengthSummary;
+                expect(summary.stat).toBe(this.fertileFields.printedStrength.toString());
+            });
+
+            it('should include a modifier named after the source card', function() {
+                const summary = this.manicured.strengthSummary;
+                const onsenModifier = summary.modifiers.find(m => m.name === 'Onsen Quarters');
+                expect(onsenModifier).toBeDefined();
+                expect(onsenModifier.amount).toBe(1);
+            });
+        });
+
+        describe('getSummary includes strengthSummary', function() {
+            beforeEach(function() {
+                this.setupTest({
+                    phase: 'conflict',
+                    player1: {
+                        inPlay: ['doji-kuwanan'],
+                        provinces: ['manicured-garden']
+                    },
+                    player2: {
+                        inPlay: ['brash-samurai'],
+                        provinces: ['fertile-fields']
+                    }
+                });
+
+                this.manicured = this.player1.findCardByName('manicured-garden', 'province 1');
+                this.manicured.facedown = false;
+                this.game.checkGameState(true);
+            });
+
+            it('should include strengthSummary in getSummary output', function() {
+                const summary = this.manicured.getSummary(this.player1Object, false);
+                expect(summary.strengthSummary).toBeDefined();
+                expect(summary.strengthSummary.stat).toBe(this.manicured.strength.toString());
+                expect(summary.strengthSummary.modifiers).toBeDefined();
+            });
+
+            it('should include isProvince and isBroken in getSummary output', function() {
+                const summary = this.manicured.getSummary(this.player1Object, false);
+                expect(summary.isProvince).toBe(true);
+                expect(summary.isBroken).toBe(false);
+            });
+
+            it('should return empty strengthSummary in getSummary when facedown', function() {
+                this.manicured.facedown = true;
+                const summary = this.manicured.getSummary(this.player1Object, false);
+                expect(summary.strengthSummary).toBeDefined();
+                expect(summary.strengthSummary.stat).toBeUndefined();
+                expect(summary.strengthSummary.modifiers).toBeUndefined();
+            });
+        });
+
+        describe('strength floor', function() {
+            beforeEach(function() {
+                this.setupTest({
+                    phase: 'conflict',
+                    player1: {
+                        inPlay: ['doji-kuwanan'],
+                        provinces: ['manicured-garden']
+                    },
+                    player2: {
+                        inPlay: ['brash-samurai'],
+                        provinces: ['fertile-fields']
+                    }
+                });
+
+                this.manicured = this.player1.findCardByName('manicured-garden', 'province 1');
+                this.manicured.facedown = false;
+                this.game.checkGameState(true);
+            });
+
+            it('should never show negative strength in the summary stat', function() {
+                expect(this.manicured.strength).toBeGreaterThanOrEqual(0);
+                const summary = this.manicured.strengthSummary;
+                expect(parseInt(summary.stat)).toBeGreaterThanOrEqual(0);
+            });
+        });
+    });
+});
