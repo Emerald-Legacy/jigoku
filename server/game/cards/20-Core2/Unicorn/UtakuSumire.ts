@@ -32,7 +32,13 @@ export default class UtakuSumire extends DrawCard {
                             player: Players.Self,
                             mode: TargetModes.UpTo,
                             numCards: 2,
-                            gameAction: AbilityDsl.actions.placeFate()
+                            gameAction: AbilityDsl.actions.placeFate(),
+                            message: '{0} encourages her troops and places {1} on {2}',
+                            messageArgs: (cards) => {
+                                const targets = Array.isArray(cards) ? cards : [cards];
+                                const named = targets.map((c) => (c === this ? 'herself' : c));
+                                return [this, 'fate', named];
+                            }
                         })
                     })
                 })

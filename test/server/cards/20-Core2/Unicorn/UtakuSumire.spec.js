@@ -123,6 +123,45 @@ describe('Utaku Sumire', function () {
             expect(this.worldlyShiotome.fate).toBe(1);
         });
 
+        it('displays chat message naming the characters that receive fate', function () {
+            this.initiateConflict({
+                type: 'military',
+                attackers: [this.utakuSumire, this.worldlyShiotome, this.utakuInfantry],
+                defenders: []
+            });
+
+            this.player1.clickCard(this.utakuSumire);
+            this.player2.pass();
+            this.player1.pass();
+
+            this.player1.clickCard(this.utakuSumire);
+            this.player1.clickCard(this.worldlyShiotome);
+            this.player1.clickPrompt('Done');
+
+            expect(this.getChatLogs(5)).toContain(
+                'Utaku Sumire encourages her troops and places fate on herself and Worldly Shiotome'
+            );
+        });
+
+        it('displays chat message when placing fate on a single character', function () {
+            this.initiateConflict({
+                type: 'military',
+                attackers: [this.utakuSumire, this.worldlyShiotome, this.utakuInfantry],
+                defenders: []
+            });
+
+            this.player1.clickCard(this.utakuSumire);
+            this.player2.pass();
+            this.player1.pass();
+
+            this.player1.clickCard(this.utakuSumire);
+            this.player1.clickPrompt('Done');
+
+            expect(this.getChatLogs(5)).toContain(
+                'Utaku Sumire encourages her troops and places fate on herself'
+            );
+        });
+
         it('does nothing on losses', function () {
             this.initiateConflict({
                 type: 'military',
