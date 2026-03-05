@@ -108,7 +108,7 @@ describe('Composite Yumi', function () {
             expect(this.player1).toBeAbleToSelect(this.compositeYumi);
         });
 
-        it('should trigger when a character is played at home during a conflict', function () {
+        it('should trigger when a character is played at home during a conflict if holder is participating', function () {
             this.initiateConflict({
                 attackers: [this.wanderingRonin],
                 defenders: []
@@ -119,16 +119,11 @@ describe('Composite Yumi', function () {
             expect(this.player1).toHavePrompt('Triggered Abilities');
         });
 
-        it('should trigger if he is not participating in the conflict', function () {
+        it('should not trigger if holder is not participating in the conflict', function () {
             this.initiateConflict({
                 attackers: [this.scout],
                 defenders: []
             });
-            this.player2.clickCard(this.stoicGunso);
-            this.player2.clickPrompt('0');
-            this.player2.clickPrompt('Home');
-            expect(this.player1).toHavePrompt('Triggered Abilities');
-            this.player1.pass();
             this.player2.clickCard(this.shinjoOutrider);
             expect(this.player1).not.toHavePrompt('Triggered Abilities');
         });

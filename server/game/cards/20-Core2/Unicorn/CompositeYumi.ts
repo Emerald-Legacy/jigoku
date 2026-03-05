@@ -24,6 +24,6 @@ export default class CompositeYumi extends DrawCard {
     }
 
     #matchCondition(context: TriggeredAbilityContext) {
-        return context.source.parent && context.game.isDuringConflict('military');
+        return context.source.parent && context.source.parent.isParticipating() && context.game.isDuringConflict('military');
     }
 }
