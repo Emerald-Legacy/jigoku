@@ -182,17 +182,17 @@ describe('Composite Yumi', function () {
 
             this.player1.clickCard(this.forceOfTheRiver);
 
-            expect(this.player1).toHavePrompt('Any reactions?');
+            expect(this.player1).toHavePrompt('Triggered Abilities');
             expect(this.player1).toBeAbleToSelect(this.compositeYumi);
             this.player1.clickCard(this.compositeYumi);
             expect(this.getChatLogs(3)).toContain('player1 uses Composite Yumi to give +1military to Wandering Ronin');
 
-            expect(this.player1).toHavePrompt('Any reactions?');
+            expect(this.player1).toHavePrompt('Triggered Abilities');
             expect(this.player1).toBeAbleToSelect(this.compositeYumi);
             this.player1.clickCard(this.compositeYumi);
             expect(this.getChatLogs(3)).toContain('player1 uses Composite Yumi to give +1military to Wandering Ronin');
 
-            expect(this.player1).toHavePrompt('Any reactions?');
+            expect(this.player1).toHavePrompt('Triggered Abilities');
             expect(this.player1).toBeAbleToSelect(this.compositeYumi);
         });
     });
