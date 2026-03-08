@@ -17,6 +17,7 @@ export class GameObject {
     protected printedType = '';
     private facedown = false;
     private effects = [] as CardEffect[];
+    private suppressEffectCount = 0;
 
     public constructor(
         game: Game,
@@ -33,9 +34,15 @@ export class GameObject {
 
     public addEffect(effect: CardEffect) {
         this.effects.push(effect);
+        if(effect.type === EffectNames.SuppressEffects) {
+            this.suppressEffectCount++;
+        }
     }
 
     public removeEffect(effect: CardEffect) {
+        if(effect.type === EffectNames.SuppressEffects) {
+            this.suppressEffectCount--;
+        }
         this.effects = this.effects.filter((e) => e !== effect);
     }
 
@@ -179,6 +186,10 @@ export class GameObject {
     }
 
     protected getRawEffects() {
+        // Fast path: no suppress effects (vast majority of game objects)
+        if(this.suppressEffectCount === 0) {
+            return this.effects;
+        }
         const suppressEffects = this.effects.filter((effect) => effect.type === EffectNames.SuppressEffects);
         const suppressedEffects = suppressEffects.reduce((array, effect) => array.concat(effect.getValue(this)), []);
         return this.effects.filter((effect) => !suppressedEffects.includes(effect));
