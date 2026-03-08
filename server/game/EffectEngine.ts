@@ -113,7 +113,7 @@ export class EffectEngine {
         stateChanged = this.effects.reduce((stateChanged, effect) => effect.checkCondition(stateChanged), stateChanged);
         if(loops === 10) {
             throw new Error('EffectEngine.checkEffects looped 10 times');
-        } else {
+        } else if(stateChanged || this.newEffect) {
             this.checkEffects(stateChanged, loops + 1);
         }
         return stateChanged;

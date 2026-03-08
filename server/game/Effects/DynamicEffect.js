@@ -19,7 +19,15 @@ class DynamicEffect extends StaticEffect {
             return oldValue.toString() !== newValue.toString();
         }
         if(Array.isArray(oldValue) && Array.isArray(newValue)) {
-            return JSON.stringify(oldValue) !== JSON.stringify(newValue);
+            if(oldValue.length !== newValue.length) {
+                return true;
+            }
+            for(let i = 0; i < oldValue.length; i++) {
+                if(oldValue[i] !== newValue[i]) {
+                    return true;
+                }
+            }
+            return false;
         }
         return oldValue !== newValue;
     }

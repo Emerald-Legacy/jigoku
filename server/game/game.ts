@@ -102,11 +102,14 @@ class Game extends EventEmitter {
     shortCardData: any[];
     router: any;
     allCards: BaseCard[];
+    private cardsByUuid = new Map<string, BaseCard>();
     provinceCards: BaseCard[];
     winner?: Player;
     finishedAt?: Date;
     winReason?: string;
     startedAt?: Date;
+    private _playersCache: Player[] | null = null;
+    private _spectatorsCache: Spectator[] | null = null;
 
     constructor(details: GameDetails, options: GameOptions = {}) {
         super();
@@ -201,6 +204,11 @@ class Game extends EventEmitter {
         return player.constructor === Spectator;
     }
 
+    private invalidatePlayerCaches(): void {
+        this._playersCache = null;
+        this._spectatorsCache = null;
+    }
+
     /**
      * Checks whether a player/spectator is still in the game
      */
@@ -212,7 +220,10 @@ class Game extends EventEmitter {
      * Get all players (not spectators) in the game
      */
     getPlayers(): Player[] {
-        return Object.values(this.playersAndSpectators).filter((player) => !this.isSpectator(player)) as Player[];
+        if(!this._playersCache) {
+            this._playersCache = Object.values(this.playersAndSpectators).filter((player) => !this.isSpectator(player)) as Player[];
+        }
+        return this._playersCache;
     }
 
     /**
@@ -244,7 +255,10 @@ class Game extends EventEmitter {
      * Get all spectators in the game
      */
     getSpectators(): Spectator[] {
-        return Object.values(this.playersAndSpectators).filter((player) => this.isSpectator(player)) as Spectator[];
+        if(!this._spectatorsCache) {
+            this._spectatorsCache = Object.values(this.playersAndSpectators).filter((player) => this.isSpectator(player)) as Spectator[];
+        }
+        return this._spectatorsCache;
     }
 
     /**
@@ -280,7 +294,7 @@ class Game extends EventEmitter {
      * Returns the card with matching uuid from anywhere in the game
      */
     findAnyCardInAnyList(cardId: string): BaseCard | undefined {
-        return this.allCards.find((card) => card.uuid === cardId);
+        return this.cardsByUuid.get(cardId);
     }
 
     /**
@@ -335,6 +349,7 @@ class Game extends EventEmitter {
             tokenCard = new token(card);
         }
         this.allCards.push(tokenCard);
+        this.cardsByUuid.set(tokenCard.uuid, tokenCard);
         return tokenCard;
     }
 
@@ -826,6 +841,10 @@ class Game extends EventEmitter {
         this.allCards = this.getPlayers().reduce((cards: BaseCard[], player: Player) => {
             return cards.concat(player.preparedDeck.allCards);
         }, []);
+        this.cardsByUuid.clear();
+        for(const card of this.allCards) {
+            this.cardsByUuid.set(card.uuid, card);
+        }
         this.provinceCards = this.allCards.filter((card) => (card as any).isProvince);
 
         if(this.gameMode !== GameModes.Skirmish) {
@@ -1081,6 +1100,7 @@ class Game extends EventEmitter {
         }
 
         this.playersAndSpectators[user.username] = new Spectator(socketId, user);
+        this.invalidatePlayerCaches();
         this.addMessage('{0} has joined the game as a spectator', user.username);
 
         return true;
@@ -1092,6 +1112,7 @@ class Game extends EventEmitter {
         }
 
         this.playersAndSpectators[user.username] = new Player(socketId, user, this.owner === user.username, this);
+        this.invalidatePlayerCaches();
 
         return true;
     }
@@ -1113,6 +1134,7 @@ class Game extends EventEmitter {
 
         if(this.isSpectator(player) || !this.started) {
             delete this.playersAndSpectators[playerName];
+            this.invalidatePlayerCaches();
         } else {
             player.left = true;
 
@@ -1133,6 +1155,7 @@ class Game extends EventEmitter {
 
         if(this.isSpectator(player)) {
             delete this.playersAndSpectators[playerName];
+            this.invalidatePlayerCaches();
         } else {
             player.disconnected = true;
         }
@@ -1149,6 +1172,7 @@ class Game extends EventEmitter {
 
         if(this.isSpectator(player) || !this.started) {
             delete this.playersAndSpectators[playerName];
+            this.invalidatePlayerCaches();
         } else {
             this.addMessage('{0} has failed to connect to the game', player);
 
@@ -1303,49 +1327,65 @@ class Game extends EventEmitter {
     /*
      * This information is sent to the client
      */
-    getState(activePlayerName?: string): any {
-        const activePlayer = (activePlayerName && this.playersAndSpectators[activePlayerName]) || new AnonymousSpectator();
-        const playerState: Record<string, any> = {};
-        const ringState: Record<string, any> = {};
-        let conflictState: any = {};
-
-        if(this.started) {
-            for(const player of this.getPlayers()) {
-                playerState[player.name] = player.getState(activePlayer as Player);
-            }
-
-            Object.values(this.rings).forEach((ring) => {
-                ringState[ring.element] = ring.getState(activePlayer as Player);
-            });
-
-            if(this.currentPhase === 'conflict' && this.currentConflict) {
-                conflictState = this.currentConflict.getSummary();
-            }
-
-            const { blocklist: _blocklist, email: _email, emailHash: _emailHash, promptedActionWindows: _promptedActionWindows, settings: _settings, ...ownerSummary } = this.owner;
-            return {
-                id: this.id,
-                manualMode: this.manualMode,
-                name: this.name,
-                owner: ownerSummary,
-                players: playerState,
-                rings: ringState,
-                conflict: conflictState,
-                phase: this.currentPhase,
-                messages: this.gameChat.messages,
-                spectators: this.getSpectators().map((spectator) => {
-                    return {
-                        id: spectator.id,
-                        name: spectator.name
-                    };
-                }),
-                started: this.started,
-                gameMode: this.gameMode,
-                winner: this.winner ? this.winner.name : undefined
-            };
+    /**
+     * Pre-compute state shared across all viewers (conflict, messages, spectators, metadata).
+     * Pass the result to getState() to avoid redundant work when sending to multiple clients.
+     */
+    getSharedState(): any {
+        if(!this.started) {
+            return null;
         }
 
-        return this.getSummary(activePlayerName);
+        let conflictState: any = {};
+        if(this.currentPhase === 'conflict' && this.currentConflict) {
+            conflictState = this.currentConflict.getSummary();
+        }
+
+        const { blocklist: _blocklist, email: _email, emailHash: _emailHash, promptedActionWindows: _promptedActionWindows, settings: _settings, ...ownerSummary } = this.owner;
+        return {
+            id: this.id,
+            manualMode: this.manualMode,
+            name: this.name,
+            owner: ownerSummary,
+            conflict: conflictState,
+            phase: this.currentPhase,
+            spectators: this.getSpectators().map((spectator) => {
+                return {
+                    id: spectator.id,
+                    name: spectator.name
+                };
+            }),
+            started: this.started,
+            gameMode: this.gameMode,
+            winner: this.winner ? this.winner.name : undefined
+        };
+    }
+
+    getState(activePlayerName?: string, sharedState?: any): any {
+        const activePlayer = (activePlayerName && this.playersAndSpectators[activePlayerName]) || new AnonymousSpectator();
+
+        if(!this.started) {
+            return this.getSummary(activePlayerName);
+        }
+
+        const shared = sharedState || this.getSharedState();
+
+        const playerState: Record<string, any> = {};
+        const ringState: Record<string, any> = {};
+
+        for(const player of this.getPlayers()) {
+            playerState[player.name] = player.getState(activePlayer as Player);
+        }
+
+        Object.values(this.rings).forEach((ring) => {
+            ringState[ring.element] = ring.getState(activePlayer as Player);
+        });
+
+        return Object.assign({}, shared, {
+            players: playerState,
+            rings: ringState,
+            messages: this.gameChat.messages
+        });
     }
 
     /*
