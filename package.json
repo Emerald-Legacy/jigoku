@@ -33,7 +33,7 @@
         "node": ">=22.0.0"
     },
     "dependencies": {
-        "axios": "^1.13.5",
+        "axios": "^1.13.6",
         "bcrypt": "^6.0.0",
         "connect-mongo": "^6.0.0",
         "cookie-parser": "^1.4.7",
@@ -41,7 +41,7 @@
         "cross-env": "^10.1.0",
         "date-fns": "^4.1.0",
         "express": "^5.2.1",
-        "express-rate-limit": "^8.2.1",
+        "express-rate-limit": "^8.3.0",
         "express-session": "^1.19.0",
         "helmet": "^8.1.0",
         "jsonwebtoken": "^9.0.3",
@@ -62,12 +62,12 @@
         "@eslint/js": "^10.0.1",
         "@types/bcrypt": "^6.0.0",
         "@types/jsonwebtoken": "^9.0.10",
-        "@types/node": "^25.3.1",
+        "@types/node": "^25.3.5",
         "@typescript-eslint/eslint-plugin": "^8.56.1",
         "@typescript-eslint/parser": "^8.56.1",
-        "eslint": "^10.0.2",
+        "eslint": "^10.0.3",
         "eslint-plugin-jasmine": "^4.2.2",
-        "globals": "^17.3.0",
+        "globals": "^17.4.0",
         "jasmine": "^6.1.0",
         "prettier": "^3.8.1",
         "typescript": "^5.9.3"
