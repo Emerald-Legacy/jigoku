@@ -23,6 +23,7 @@ export class GameServer {
     private io: socketio.Server;
     private titleCardData: any;
     private shortCardData: any;
+    private lastSentMessageCount = new Map<string, number>();
 
     constructor() {
         let privateKey: undefined | string;
