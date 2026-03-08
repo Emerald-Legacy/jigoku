@@ -104,7 +104,7 @@ export class GamePipeline {
                     return false;
                 }
             } else {
-                this.pipeline = this.pipeline.slice(1);
+                this.pipeline.shift();
             }
 
             this.#queueIntoPipeline();
