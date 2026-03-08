@@ -160,9 +160,37 @@ export class GameServer {
     }
 
     sendGameState(game: Game): void {
+        const sharedState = game.getSharedState();
+        const allMessages = game.gameChat.messages;
+        const totalMessages = allMessages.length;
+        let spectatorState: any = null;
+
         for(const player of Object.values(game.getPlayersAndSpectators()) as any[]) {
             if(player.socket && !player.left && !player.disconnected) {
-                player.socket.send('gamestate', game.getState(player.name));
+                let state: any;
+                if(game.isSpectator(player)) {
+                    // All spectators see the same game view — compute once
+                    if(!spectatorState) {
+                        spectatorState = game.getState(player.name, sharedState);
+                    }
+                    state = spectatorState;
+                } else {
+                    state = game.getState(player.name, sharedState);
+                }
+
+                // Send only new messages since last send
+                const socketId = player.socket.id || player.name;
+                const lastSent = this.lastSentMessageCount.get(socketId) || 0;
+                const newMessages = lastSent === 0 ? allMessages : allMessages.slice(lastSent);
+                this.lastSentMessageCount.set(socketId, totalMessages);
+
+                // Replace full messages with just new ones, add flag for client
+                const stateWithMessages = Object.assign({}, state, {
+                    messages: newMessages,
+                    newMessages: lastSent > 0
+                });
+
+                player.socket.send('gamestate', stateWithMessages);
             }
         }
     }
