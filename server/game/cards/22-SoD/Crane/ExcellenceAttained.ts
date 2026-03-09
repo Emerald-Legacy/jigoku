@@ -26,7 +26,7 @@ export default class ExcellenceAttained extends ProvinceCard {
                     ],
                     subActionProperties: (card) => ({ attachment: card }),
                     gameAction: AbilityDsl.actions.selectCard({
-                        controller: Players.Self,
+                        controller: Players.Any,
                         location: Locations.PlayArea,
                         cardType: CardTypes.Character,
                         message: '{0} chooses to attach {1} to {2}',

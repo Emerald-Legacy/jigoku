@@ -51,7 +51,7 @@ describe('SoD - Scorpion', function () {
                         hand: []
                     },
                     player2: {
-                        inPlay: ['keeper-initiate', 'doji-diplomat'],
+                        inPlay: ['keeper-initiate', 'doji-diplomat', 'doji-kuwanan'],
                         hand: ['assassination', 'let-go', 'duelist-training']
                     }
                 });
@@ -59,9 +59,11 @@ describe('SoD - Scorpion', function () {
                 this.shinobu = this.player1.findCardByName('bayushi-shinobu');
                 this.keeper = this.player2.findCardByName('keeper-initiate');
                 this.diplomat = this.player2.findCardByName('doji-diplomat');
+                this.kuwanan = this.player2.findCardByName('doji-kuwanan');
                 this.assassination = this.player2.findCardByName('assassination');
                 this.uji = this.player1.findCardByName('daidoji-uji');
                 this.uji.honor();
+                this.kuwanan.dishonor();
                 this.keeper.dishonor();
             });
 
@@ -69,6 +71,7 @@ describe('SoD - Scorpion', function () {
                 this.player1.clickCard(this.shinobu);
                 expect(this.player1).toBeAbleToSelect(this.keeper);
                 expect(this.player1).not.toBeAbleToSelect(this.diplomat);
+                expect(this.player1).not.toBeAbleToSelect(this.kuwanan);
 
                 this.player1.clickCard(this.keeper);
                 expect(this.getChatLogs(5)).toContain('player1 uses Bayushi Shinobu, bowing Bayushi Shinobu to take control of Keeper Initiate');

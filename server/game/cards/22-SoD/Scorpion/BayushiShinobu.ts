@@ -28,7 +28,7 @@ export default class BayushiShinobu extends DrawCard {
             target: {
                 cardType: CardTypes.Character,
                 controller: Players.Opponent,
-                cardCondition: (card, context) => !card.anotherUniqueInPlay(context.player) && card.isDishonored,
+                cardCondition: (card, context) => !card.anotherUniqueInPlay(context.player) && card.isDishonored && !card.isUnique(),
                 gameAction: AbilityDsl.actions.multiple([
                     AbilityDsl.actions.cardLastingEffect(context => ({
                         effect: AbilityDsl.effects.takeControl(context.player),

@@ -89,6 +89,14 @@ class DrawCard extends BaseCard {
             this.eventRegistrarForEphemeral = new EventRegistrar(this.game, this);
             this.eventRegistrarForEphemeral.register([{ [EventNames.OnCardPlayed]: 'handleEphemeral' }]);
         }
+        if(cardData.type === CardTypes.Attachment && this.hasEphemeral()) {
+            this.eventRegistrarForEphemeral = new EventRegistrar(this.game, this);
+            this.eventRegistrarForEphemeral.register([{ [EventNames.OnCardLeavesPlay]: 'handleEphemeral' }]);
+        }
+        if(cardData.type === CardTypes.Character && this.hasEphemeral()) {
+            this.eventRegistrarForEphemeral = new EventRegistrar(this.game, this);
+            this.eventRegistrarForEphemeral.register([{ [EventNames.OnCardLeavesPlay]: 'handleEphemeral' }]);
+        }
         if(this.isDynasty) {
             this.abilities.reactions.push(new RallyAbility(this.game, this));
             this.abilities.reactions.push(new ThrivingAbility(this.game, this));

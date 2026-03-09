@@ -59,6 +59,66 @@ describe('SoD - Dragon', function () {
             });
         });
 
+        describe('Nightingale Tattoo', function () {
+            beforeEach(function () {
+                this.setupTest({
+                    phase: 'conflict',
+                    player1: {
+                        inPlay: ['tattooed-wanderer'],
+                        hand: ['let-go', 'nightingale-tattoo'],
+                        conflictDiscard: ['renowned-singer', 'assassination', 'hawk-tattoo', 'void-fist', 'hurricane-punch']
+                    }
+                });
+
+                this.wanderer = this.player1.findCardByName('tattooed-wanderer');
+                this.night = this.player1.findCardByName('nightingale-tattoo');
+                this.singer = this.player1.findCardByName('renowned-singer');
+                this.letGo = this.player1.findCardByName('let-go');
+                this.assassination = this.player1.findCardByName('assassination');
+                this.hawkTattoo = this.player1.findCardByName('hawk-tattoo');
+                this.fist = this.player1.findCardByName('void-fist');
+                this.punch = this.player1.findCardByName('hurricane-punch');
+
+                this.player1.playAttachment(this.night, this.wanderer);
+                this.player2.pass();
+            });
+
+            it('should prompt opponent to pick a card', function () {
+                this.player1.clickCard(this.night);
+                let deck = this.player1.conflictDeck.length;
+
+                expect(this.player1).toHavePrompt('Choose two conflict cards');
+                expect(this.player1).not.toBeAbleToSelect(this.singer);
+                expect(this.player1).not.toBeAbleToSelect(this.assassination);
+                expect(this.player1).toBeAbleToSelect(this.hawkTattoo);
+                expect(this.player1).toBeAbleToSelect(this.punch);
+                expect(this.player1).toBeAbleToSelect(this.fist);
+
+                this.player1.clickCard(this.hawkTattoo);
+                this.player1.clickCard(this.punch);
+                this.player1.clickPrompt('Done');
+                expect(this.player2).toHavePrompt('Choose a card to shuffle into your opponent\'s deck');
+                expect(this.player2).toHavePromptButton('Hawk Tattoo');
+                expect(this.player2).toHavePromptButton('Hurricane Punch');
+                expect(this.player2).not.toHavePromptButton('Done');
+
+                this.player2.clickPrompt('Hurricane Punch');
+                expect(this.punch.location).toBe('conflict deck');
+                expect(this.hawkTattoo.location).toBe('removed from game');
+                expect(this.player1.conflictDeck.length).toBe(deck + 1);
+
+                expect(this.getChatLogs(5)).toContain('player1 uses Nightingale Tattoo to have player2 shuffle one of Hawk Tattoo and Hurricane Punch into player1\'s conflict deck');
+                expect(this.getChatLogs(5)).toContain('player2 chooses Hurricane Punch to be shuffled into player1\'s deck. Hawk Tattoo is removed from the game');
+            });
+
+            it('ephemeral attachment', function () {
+                console.log(this.night.hasEphemeral());
+                this.player1.clickCard(this.letGo);
+                this.player1.clickCard(this.night);
+                expect(this.night.location).toBe('removed from game');
+            });
+        })
+
         describe('Strike as the Elements', function () {
             beforeEach(function () {
                 this.setupTest({

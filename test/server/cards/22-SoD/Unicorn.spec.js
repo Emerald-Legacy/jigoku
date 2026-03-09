@@ -27,16 +27,6 @@ describe('SoD - Unicorn', function () {
             });
 
             it('should work', function () {
-                this.noMoreActions();
-
-                this.initiateConflict({
-                    type: 'military',
-                    attackers: [this.keeper],
-                    defenders: []
-                });
-
-                this.player2.pass();
-
                 this.player1.clickCard(this.campfire);
                 expect(this.player1).toBeAbleToSelect(this.liar);
                 expect(this.player1).not.toBeAbleToSelect(this.keeper);
@@ -52,15 +42,6 @@ describe('SoD - Unicorn', function () {
             it('with storyteller should work', function () {
                 this.player1.clickCard(this.singer);
                 this.player1.clickPrompt('0');
-
-                this.noMoreActions();
-
-                this.initiateConflict({
-                    type: 'military',
-                    attackers: [this.keeper],
-                    defenders: []
-                });
-
                 this.player2.pass();
 
                 this.player1.clickCard(this.campfire);
@@ -81,20 +62,22 @@ describe('SoD - Unicorn', function () {
                 this.setupTest({
                     phase: 'conflict',
                     player1: {
-                        inPlay: ['bayushi-liar', 'kakita-toshimoko', 'keeper-initiate'],
+                        inPlay: ['bayushi-liar', 'kakita-toshimoko', 'keeper-initiate', 'asahina-augur'],
                         hand: ['cornering-maneuver']
                     },
                     player2: {
-                        inPlay: ['doji-diplomat', 'brash-samurai'],
+                        inPlay: ['doji-diplomat', 'brash-samurai', 'doji-challenger'],
                         hand: ['assassination', 'let-go', 'duelist-training']
                     }
                 });
 
                 this.liar = this.player1.findCardByName('bayushi-liar');
+                this.augur = this.player1.findCardByName('asahina-augur');
                 this.keeper = this.player1.findCardByName('keeper-initiate');
                 this.toshimoko = this.player1.findCardByName('kakita-toshimoko');
                 this.diplomat = this.player2.findCardByName('doji-diplomat');
                 this.brash = this.player2.findCardByName('brash-samurai');
+                this.challenger = this.player2.findCardByName('doji-challenger');
                 this.cornering = this.player1.findCardByName('cornering-maneuver');
             });
 
@@ -102,8 +85,8 @@ describe('SoD - Unicorn', function () {
                 this.noMoreActions();
                 this.initiateConflict({
                     type: 'military',
-                    attackers: [this.toshimoko],
-                    defenders: [this.brash]
+                    attackers: [this.toshimoko, this.augur],
+                    defenders: [this.brash, this.challenger]
                 });
 
                 this.player2.pass();
@@ -111,6 +94,7 @@ describe('SoD - Unicorn', function () {
                 this.player1.clickCard(this.cornering);
                 expect(this.player1).toBeAbleToSelect(this.toshimoko);
                 expect(this.player1).not.toBeAbleToSelect(this.keeper);
+                expect(this.player1).toBeAbleToSelect(this.augur);
                 expect(this.player1).not.toBeAbleToSelect(this.liar);
                 expect(this.player1).not.toBeAbleToSelect(this.brash);
 

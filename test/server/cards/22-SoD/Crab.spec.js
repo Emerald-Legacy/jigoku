@@ -92,7 +92,7 @@ describe('SoD - Crab', function () {
                 this.setupTest({
                     phase: 'conflict',
                     player1: {
-                        inPlay: ['silent-skirmisher', 'agasha-swordsmith', 'caretaker-of-the-dead-eyes'],
+                        inPlay: ['silent-skirmisher', 'agasha-swordsmith', 'caretaker-of-the-dead-eyes', 'brash-samurai'],
                         hand: ['a-bad-death']
                     },
                     player2: {
@@ -106,19 +106,21 @@ describe('SoD - Crab', function () {
                 this.deadeyes = this.player1.findCardByName('caretaker-of-the-dead-eyes');
                 this.yokuni = this.player2.findCardByName('togashi-yokuni');
                 this.assassination = this.player2.findCardByName('assassination');
+                this.brash = this.player1.findCardByName('brash-samurai');
 
                 this.skirmisher.dishonor();
                 this.swordsmith.dishonor();
                 this.yokuni.honor();
             });
 
-            it('should rehonor and not cause honor loss', function () {
+            it('should rehonor and not cause honor loss and give Courtesy and gain a fate', function () {
                 this.noMoreActions();
                 this.initiateConflict({
-                    attackers: [this.skirmisher, this.swordsmith],
+                    attackers: [this.skirmisher, this.swordsmith, this.brash],
                     defenders: [this.yokuni]
                 });
                 const honor = this.player1.honor;
+                const fate = this.player1.fate;
 
                 this.player2.clickCard(this.assassination);
                 this.player2.clickCard(this.skirmisher);
@@ -129,8 +131,46 @@ describe('SoD - Crab', function () {
                 this.player1.clickCard(this.deadeyes);
                 expect(this.skirmisher.location).toBe('dynasty discard pile');
                 expect(this.player1.honor).toBe(honor);
+                expect(this.player1.fate).toBe(fate + 1);
 
-                expect(this.getChatLogs(5)).toContain('player1 uses Caretaker of the Dead Eyes to honor Silent Skirmisher');
+                expect(this.getChatLogs(5)).toContain('player1 uses Caretaker of the Dead Eyes to honor Silent Skirmisher and give Courtesy to Silent Skirmisher');
+                expect(this.getChatLogs(5)).toContain('player1 gains a fate due to Silent Skirmisher\'s Courtesy');
+            });
+
+            it('should rehonor and not cause honor loss but not give Courtesy if not berserker', function () {
+                this.brash.dishonor();
+                this.noMoreActions();
+                this.initiateConflict({
+                    attackers: [this.skirmisher, this.swordsmith, this.brash],
+                    defenders: [this.yokuni]
+                });
+                const honor = this.player1.honor;
+                const fate = this.player1.fate;
+
+                this.player2.clickCard(this.assassination);
+                this.player2.clickCard(this.brash);
+
+                expect(this.player1).toHavePrompt('Triggered Abilities');
+                expect(this.player1).toBeAbleToSelect(this.deadeyes);
+
+                this.player1.clickCard(this.deadeyes);
+                expect(this.brash.location).toBe('dynasty discard pile');
+                expect(this.player1.honor).toBe(honor);
+                expect(this.player1.fate).toBe(fate);
+
+                expect(this.getChatLogs(5)).toContain('player1 uses Caretaker of the Dead Eyes to honor Brash Samurai');
+            });
+
+            it('should not trigger if it wont do anything', function () {
+                this.noMoreActions();
+                this.initiateConflict({
+                    attackers: [this.skirmisher, this.swordsmith, this.brash],
+                    defenders: [this.yokuni]
+                });
+                this.player2.clickCard(this.assassination);
+                this.player2.clickCard(this.brash);
+
+                expect(this.player1).toHavePrompt('Conflict Action Window');
             });
         });
 
@@ -196,25 +236,24 @@ describe('SoD - Crab', function () {
                     player1: {
                         inPlay: ['silent-skirmisher', 'agasha-swordsmith'],
                         hand: ['reckless-assault'],
-                        conflictDiscard: ['under-the-new-moon']
                     },
                     player2: {
-                        inPlay: ['togashi-yokuni', 'doji-challenger', 'brash-samurai']
+                        inPlay: ['togashi-yokuni', 'doji-challenger', 'brash-samurai', 'doji-diplomat']
                     }
                 });
 
                 this.skirmisher = this.player1.findCardByName('silent-skirmisher');
+                this.diplomat = this.player2.findCardByName('doji-diplomat');
                 this.swordsmith = this.player1.findCardByName('agasha-swordsmith');
                 this.assault = this.player1.findCardByName('reckless-assault');
                 this.yokuni = this.player2.findCardByName('togashi-yokuni');
                 this.challenger = this.player2.findCardByName('doji-challenger');
                 this.brash = this.player2.findCardByName('brash-samurai');
-                this.moon = this.player1.findCardByName('under-the-new-moon');
                 this.shamefulDisplay = this.player2.findCardByName('shameful-display', 'province 1');
                 this.yokuni.honor();
             });
 
-            it('should bow', function () {
+            it('should prevent declaring defenders', function () {
                 this.noMoreActions();
                 this.initiateConflict({
                     attackers: [this.skirmisher]
@@ -223,58 +262,12 @@ describe('SoD - Crab', function () {
                 expect(this.player1).toBeAbleToSelect(this.assault);
                 this.player1.clickCard(this.assault);
 
-                this.player1.clickCard(this.yokuni);
-                this.player1.clickCard(this.challenger);
+                expect(this.player1).toBeAbleToSelect(this.yokuni);
+                expect(this.player1).toBeAbleToSelect(this.challenger);
+                expect(this.player1).not.toBeAbleToSelect(this.brash);
+                expect(this.player1).not.toBeAbleToSelect(this.diplomat);
 
-                this.player1.clickPrompt('Done');
-
-                this.player2.clickPrompt('Done');
-
-                expect(this.yokuni.bowed).toBe(true);
-                expect(this.challenger.bowed).toBe(true);
-
-                expect(this.getChatLogs(7)).toContain('player1 plays Reckless Assault to bow Togashi Yokuni and Doji Challenger if neither of them defend');
-                expect(this.getChatLogs(7)).toContain('Togashi Yokuni and Doji Challenger are bowed due to the delayed effect of Reckless Assault');
-            });
-
-            it('should not bow', function () {
-                this.noMoreActions();
-                this.initiateConflict({
-                    attackers: [this.skirmisher]
-                });
-                this.player1.clickCard(this.assault);
-
-                this.player1.clickCard(this.yokuni);
-                this.player1.clickCard(this.challenger);
-                this.player1.clickPrompt('Done');
-
-                this.player2.clickCard(this.yokuni);
-                this.player2.clickPrompt('Done');
-
-                expect(this.getChatLogs(5)).toContain('player1 plays Reckless Assault to bow Togashi Yokuni and Doji Challenger if neither of them defend');
-                expect(this.getChatLogs(5)).not.toContain('Togashi Yokuni and Doji Challenger are bowed due to the delayed effect of Reckless Assault');
-
-                expect(this.yokuni.bowed).toBe(false);
-                expect(this.challenger.bowed).toBe(false);
-            });
-
-            it('should not trigger when new moon is in effect', function () {
-                this.player1.moveCard(this.moon, 'hand');
-                this.noMoreActions();
-
-                this.player1.clickCard(this.moon);
-                this.player1.clickPrompt('1');
-                expect(this.player2).toHavePrompt('Choose Defenders');
-                this.player2.clickPrompt('Done');
-
-                this.player1.clickRing('fire');
-                this.player1.clickCard(this.shamefulDisplay);
-                this.player1.clickCard(this.skirmisher);
-                this.player1.clickPrompt('Initiate Conflict');
-
-                expect(this.player1).not.toHavePrompt('Triggered Abilities');
-
-                expect(this.getChatLogs(5)).not.toContain('Togashi Yokuni and Doji Challenger are bowed due to the delayed effect of Reckless Assault');
+                expect(this.getChatLogs(7)).toContain('player1 plays Reckless Assault to prevent characters with less than 3military from defending (this affects Brash Samurai and Doji Diplomat)');
             });
         });
 
