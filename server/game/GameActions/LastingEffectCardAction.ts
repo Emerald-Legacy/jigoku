@@ -26,6 +26,13 @@ export class LastingEffectCardAction<
         ability: null
     };
 
+    getEffectMessage(context: AbilityContext, additionalProperties = {}): [string, any[]] {
+        let properties = this.getProperties(context, additionalProperties);
+        const message = properties.message || this.effect;
+
+        return [message, [properties.target]];
+    }
+
     // @ts-expect-error -- overriding return type to be more specific than base class signature
     getProperties(context: AbilityContext, additionalProperties = {}): LastingEffectCardProperties {
         let properties = super.getProperties(context, additionalProperties) as LastingEffectCardProperties;

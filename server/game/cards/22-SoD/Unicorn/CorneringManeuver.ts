@@ -11,7 +11,7 @@ export default class CorneringManeuver extends DrawCard {
             condition: context => context.game.isDuringConflict('military'),
             target: {
                 cardType: CardTypes.Character,
-                cardCondition: (card, context) => card.hasTrait('bushi') && card.isParticipatingFor(context.player),
+                cardCondition: (card, context) => card.isParticipatingFor(context.player),
                 gameAction: AbilityDsl.actions.cardLastingEffect(_context => ({
                     effect: AbilityDsl.effects.modifyMilitarySkill(2)
                 }))

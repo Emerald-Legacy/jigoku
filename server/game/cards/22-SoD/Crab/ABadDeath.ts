@@ -1,60 +1,35 @@
-import { CardTypes } from '../../../Constants';
+import { CardTypes, TargetModes } from '../../../Constants';
 import AbilityDsl from '../../../abilitydsl';
 import DrawCard from '../../../drawcard';
 
 export default class ABadDeath extends DrawCard {
     static id = 'a-bad-death';
 
-    private getMil(card) {
-        if(!card) {
-            return 1;
-        }
-
-        let amountOfCards = card.printedMilitarySkill;
-        if(card.hasTrait('berserker')) {
-            amountOfCards = card.getMilitarySkill();
-        }
-        return amountOfCards;
-    }
-
     public setupCardAbilities() {
         this.reaction({
-            title: 'Sacrifice a character to discard a card',
+            title: 'Sacrifice a character to dishonor characters',
             when: {
-                afterConflict: (event, context) => event.conflict.loser === context.player && event.conflict.conflictType === 'military' && !!context.player.opponent
+                afterConflict: (event, context) => event.conflict.loser === context.player && !!context.player.opponent
             },
             cost: AbilityDsl.costs.dishonorAndSacrifice({
                 cardType: CardTypes.Character,
-                cardCondition: (card: DrawCard) => card.isParticipating() && this.getMil(card) > 0
+                cardCondition: (card: DrawCard) => card.isParticipating()
             }),
-            gameAction: AbilityDsl.actions.multipleContext((context) => {
-                const amountOfCards = this.getMil(context.costs.dishonorAndSacrificeStateWhenChosen);
-
-                let cards =
-                    context.player.opponent && amountOfCards
-                        ? context.player.opponent.hand.shuffle().slice(0, amountOfCards)
-                        : [context.source];
-                return {
-                    gameActions: [
-                        AbilityDsl.actions.lookAt(() => ({
-                            target: cards.sort((card: DrawCard) => card.name)
-                        })),
-                        AbilityDsl.actions.cardMenu((context) => ({
-                            cards: cards.sort((card: DrawCard) => card.name),
-                            targets: true,
-                            message: '{0} chooses {1} to be discarded',
-                            messageArgs: (card) => [context.player, card],
-                            gameAction: AbilityDsl.actions.discardCard()
-                        }))
-                    ]
-                };
-            }),
-            effect: 'look at {1} random card{3} in {2}\'s hand',
-            effectArgs: (context) => [
-                this.getMil(context.costs.dishonorAndSacrificeStateWhenChosen),
-                context.player.opponent,
-                this.getMil(context.costs.dishonorAndSacrificeStateWhenChosen) === 1 ? '' : 's'
-            ]
+            cannotTargetFirst: true,
+            target: {
+                mode: TargetModes.UpToVariable,
+                numCardsFunc: (context) => context.costs.dishonorAndSacrificeStateWhenChosen?.hasTrait('berserker') ? 2 : 1,
+                cardType: CardTypes.Character,
+                cardCondition: card => card.isParticipating(),
+                gameAction: AbilityDsl.actions.dishonor()
+            },
+            then: context => ({
+                message: '{0} draws a card',
+                gameAction: AbilityDsl.actions.draw({
+                    target: context.player,
+                    amount: 1
+                })
+            })
         });
     }
 }

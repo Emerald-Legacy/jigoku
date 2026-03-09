@@ -26,6 +26,7 @@ const Effects: Record<string, any> = {
     // Card effects
     addElementAsAttacker: (element: any) => EffectBuilder.card.flexible(EffectNames.AddElementAsAttacker, element),
     addFaction: (faction: any) => EffectBuilder.card.static(EffectNames.AddFaction, faction),
+    loseFaction: (faction: any) => EffectBuilder.card.static(EffectNames.LoseFaction, faction),
     addKeyword: (keyword: any) => EffectBuilder.card.static(EffectNames.AddKeyword, keyword),
     addTrait: (trait: any) => EffectBuilder.card.static(EffectNames.AddTrait, trait),
     additionalTriggerCostForCard: (func: any) => EffectBuilder.card.static(EffectNames.AdditionalTriggerCost, func),

@@ -18,6 +18,9 @@ export class HonorAction extends CardGameAction {
         } else if(!card.isDishonored && !card.checkRestrictions('receiveHonorToken', context)) {
             return false;
         }
+        if(!context.player.checkRestrictions('honor', context)) {
+            return false;
+        }
         return super.canAffect(card, context);
     }
 

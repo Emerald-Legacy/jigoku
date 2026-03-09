@@ -567,6 +567,7 @@ describe('SoD - Phoenix', function () {
             });
 
             it('should work', function () {
+                const fate = this.player1.fate;
                 this.noMoreActions();
                 this.initiateConflict({
                     type: 'military',
@@ -583,12 +584,13 @@ describe('SoD - Phoenix', function () {
 
                 expect(this.aramoro.getMilitarySkill()).toBe(2);
                 expect(this.aramoro.getPoliticalSkill()).toBe(5);
-                expect(this.player1).toHavePrompt('Swap abilities?');
+                expect(this.player1).toHavePrompt('Pay 1 fate to swap abilities?');
                 expect(this.player1).toHavePromptButton('Yes');
                 expect(this.player1).toHavePromptButton('No');
 
                 this.player1.clickPrompt('Yes');
 
+                expect(this.player1.fate).toBe(fate - 1);
                 expect(this.getChatLogs(5)).toContain('player1 channels their water affinity to swap the abilities of Adept of the Waves and Bayushi Aramoro');
 
                 this.player2.clickCard(this.aramoro);
@@ -604,6 +606,28 @@ describe('SoD - Phoenix', function () {
                 this.player1.clickCard(this.aramoro);
 
                 expect(this.getChatLogs(5)).toContain('player1 uses Adept of the Waves\'s gained ability from Bayushi Aramoro, dishonoring Adept of the Waves to reduce Bayushi Aramoro\'s military skill by 2 - they will die if they reach 0');
+            });
+
+            it('shouldnt be able to swap if you dont have fate', function () {
+                this.player1.fate = 0;
+                this.noMoreActions();
+                this.initiateConflict({
+                    type: 'military',
+                    attackers: [this.adept],
+                    defenders: [this.student, this.aramoro]
+                });
+
+                this.player2.pass();
+                this.player1.clickCard(this.ebb);
+                this.player1.clickCard(this.adept);
+                this.player1.clickCard(this.aramoro);
+
+                expect(this.getChatLogs(5)).toContain('player1 plays Ebb and Flow to switch Bayushi Aramoro\'s military and political skill');
+
+                expect(this.aramoro.getMilitarySkill()).toBe(2);
+                expect(this.aramoro.getPoliticalSkill()).toBe(5);
+                expect(this.player1).not.toHavePrompt('Pay 1 fate to swap abilities?');
+                expect(this.player2).toHavePrompt('Conflict Action Window');
             });
 
             it('passives', function () {

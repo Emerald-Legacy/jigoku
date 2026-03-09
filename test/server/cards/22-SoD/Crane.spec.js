@@ -266,6 +266,51 @@ describe('SoD - Crane', function () {
 
                 expect(this.kuwanan.glory).toBe(6);
             });
+
+            it('gains honor when winning if dishonored', function () {
+                this.noMoreActions();
+                this.player1.passConflict();
+                this.noMoreActions();
+                this.initiateConflict({
+                    attackers: [this.challenger],
+                    defenders: [this.kuwanan],
+                    type: 'military',
+                    province: this.pilgrimage
+                });
+
+                this.player1.clickCard(this.kabuto);
+                this.player1.clickCard(this.kuwanan);
+                this.player2.pass();
+                this.player1.pass();
+
+                let honor = this.player1.honor;
+
+                expect(this.player1).toHavePrompt('Triggered Abilities');
+                expect(this.player1).toBeAbleToSelect(this.kabuto);
+                this.player1.clickCard(this.kabuto);
+                expect(this.player1.honor).toBe(honor + 1);
+                expect(this.getChatLogs(5)).toContain('player1 uses Ancestral Kabuto to gain 1 honor');
+            });
+
+            it('does not gain honor when winning if not dishonored', function () {
+                this.noMoreActions();
+                this.player1.passConflict();
+                this.noMoreActions();
+                this.initiateConflict({
+                    attackers: [this.challenger],
+                    defenders: [this.kuwanan],
+                    type: 'military',
+                    province: this.pilgrimage
+                });
+
+                this.player1.clickCard(this.kabuto);
+                this.player1.clickCard(this.kuwanan);
+                this.kuwanan.honor();
+                this.player2.pass();
+                this.player1.pass();
+
+                expect(this.player1).toHavePrompt('Action Window');
+            });
         });
 
         describe('Observant Daidoji', function () {
@@ -438,7 +483,7 @@ describe('Excellence Attained', function () {
             expect(this.player2).toHavePrompt('Choose defenders');
         });
 
-        it('should prompt to choose a character to attach to controlled by the player', function () {
+        it('should prompt to choose a character to attach to', function () {
             this.noMoreActions();
             this.initiateConflict({
                 attackers: [this.adeptOfTheWaves]
@@ -448,7 +493,7 @@ describe('Excellence Attained', function () {
             expect(this.player2).toHavePrompt('Choose a character');
             expect(this.player2).toBeAbleToSelect(this.borderRider);
             expect(this.player2).toBeAbleToSelect(this.battleMaidenRecruit);
-            expect(this.player2).not.toBeAbleToSelect(this.adeptOfTheWaves);
+            expect(this.player2).toBeAbleToSelect(this.adeptOfTheWaves);
         });
 
         it('should attach the chosen attachment to the chosen character and shuffle the deck', function () {
