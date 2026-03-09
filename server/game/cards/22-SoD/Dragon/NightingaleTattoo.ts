@@ -45,11 +45,11 @@ export default class NightingaleTattoo extends DrawCard {
                                     AbilityDsl.actions.returnToDeck({
                                         target: selectedCard,
                                         location: Locations.ConflictDiscardPile,
-                                        shuffle: true,
+                                        shuffle: true
                                     }),
                                     AbilityDsl.actions.removeFromGame({
                                         target: removedCard,
-                                        location: Locations.ConflictDiscardPile,
+                                        location: Locations.ConflictDiscardPile
                                     })
                                 ]);
 

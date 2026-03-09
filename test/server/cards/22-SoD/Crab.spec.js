@@ -225,7 +225,7 @@ describe('SoD - Crab', function () {
                     phase: 'conflict',
                     player1: {
                         inPlay: ['silent-skirmisher', 'agasha-swordsmith'],
-                        hand: ['reckless-assault'],
+                        hand: ['reckless-assault']
                     },
                     player2: {
                         inPlay: ['togashi-yokuni', 'doji-challenger', 'brash-samurai', 'doji-diplomat']

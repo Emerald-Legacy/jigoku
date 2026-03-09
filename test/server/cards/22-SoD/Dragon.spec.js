@@ -116,7 +116,7 @@ describe('SoD - Dragon', function () {
                 this.player1.clickCard(this.night);
                 expect(this.night.location).toBe('removed from game');
             });
-        })
+        });
 
         describe('Strike as the Elements', function () {
             beforeEach(function () {
